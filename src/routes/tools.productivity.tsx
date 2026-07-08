@@ -16,13 +16,13 @@ export const Route = createFileRoute("/tools/productivity")({
       { property: "og:title", content: "Productivity Tools — UniversalTools" },
       { property: "og:description", content: "Timers, calculators and unit converters — free and in your browser." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://universal-tool.lovable.app/tools/productivity" },
+      { property: "og:url", content: "https://universaltools.in/tools/productivity" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Productivity Tools — UniversalTools" },
       { name: "twitter:description", content: "Timers, calculators and unit converters, free in your browser." },
       ...imageMeta(),
     ],
-    links: [{ rel: "canonical", href: "https://universal-tool.lovable.app/tools/productivity" }],
+    links: [{ rel: "canonical", href: "https://universaltools.in/tools/productivity" }],
     scripts: (() => {
       const tools = [
         { name: "Timer", url: "/tools/productivity#timer", description: "Free online countdown timer with alarm — set minutes and seconds and get an audible alert when time is up." },
@@ -59,12 +59,12 @@ export const Route = createFileRoute("/tools/productivity")({
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
           name: t.name,
-          url: `https://universal-tool.lovable.app${t.url}`,
+          url: `https://universaltools.in${t.url}`,
           applicationCategory: "UtilitiesApplication",
           operatingSystem: "Any (browser)",
           description: t.description,
           offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-          isPartOf: { "@type": "WebSite", name: "UniversalTools", url: "https://universal-tool.lovable.app" },
+          isPartOf: { "@type": "WebSite", name: "UniversalTools", url: "https://universaltools.in" },
         }),
       }));
       return [...base, ...perTool];
