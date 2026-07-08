@@ -1,0 +1,54 @@
+name: DB permissions guard
+
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "scripts/check-migration-perms.mjs"
+      - ".github/workflows/db-perms.yml"
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Verify SECURITY DEFINER grants are locked down
+        id: perms
+        run: |
+          set -o pipefail
+          node scripts/check-migration-perms.mjs 2>&1 | tee /tmp/perms.log
+        continue-on-error: false
+
+      - name: Write summary
+        if: always()
+        run: |
+          {
+            echo "## DB permissions guard"
+            echo ""
+            if [ "${{ steps.perms.outcome }}" = "success" ]; then
+              echo "✅ **PASS** — all migrations conform to SECURITY DEFINER lockdown rules."
+            else
+              echo "❌ **FAIL** — see log below."
+            fi
+            echo ""
+            echo "### Rules checked"
+            echo "1. Every \`SECURITY DEFINER\` function has a matching \`REVOKE ... FROM PUBLIC/anon/authenticated\` in the same migration."
+            echo "2. No \`GRANT EXECUTE ... TO PUBLIC\` on any function."
+            echo "3. No \`admin_*\` function granted to \`anon\`."
+            echo ""
+            migrations=$(ls supabase/migrations/*.sql 2>/dev/null | wc -l | tr -d ' ')
+            echo "### Migrations scanned: ${migrations}"
+            echo ""
+            echo "<details><summary>Full log</summary>"
+            echo ""
+            echo '```'
+            cat /tmp/perms.log 2>/dev/null || echo "(no log)"
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"

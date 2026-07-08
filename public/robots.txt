@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+
+Sitemap: https://universal-tool.lovable.app/sitemap.xml

@@ -1,0 +1,136 @@
+export type ToolCategory = "text" | "pdf" | "image" | "code" | "password" | "color" | "productivity";
+
+export interface ToolMeta {
+  id: string;
+  name: string;
+  description: string;
+  category: ToolCategory;
+  keywords: string[];
+  route: string;
+}
+
+export const TOOLS: ToolMeta[] = [
+  // TEXT
+  { id: "word-count", name: "Word Counter", description: "Count words instantly", category: "text", keywords: ["words", "count"], route: "/tools/text#word-count" },
+  { id: "char-count", name: "Character Counter", description: "Count characters with & without spaces", category: "text", keywords: ["chars", "letters"], route: "/tools/text#word-count" },
+  { id: "read-time", name: "Reading Time", description: "Estimate reading time", category: "text", keywords: ["minutes", "read"], route: "/tools/text#word-count" },
+  { id: "uppercase", name: "UPPERCASE", description: "Convert text to upper case", category: "text", keywords: ["caps"], route: "/tools/text#transform" },
+  { id: "lowercase", name: "lowercase", description: "Convert text to lower case", category: "text", keywords: [], route: "/tools/text#transform" },
+  { id: "title-case", name: "Title Case", description: "Capitalize Each Word", category: "text", keywords: [], route: "/tools/text#transform" },
+  { id: "sentence-case", name: "Sentence case", description: "Capitalize sentences", category: "text", keywords: [], route: "/tools/text#transform" },
+  { id: "reverse", name: "Reverse Text", description: "Reverse the string", category: "text", keywords: [], route: "/tools/text#transform" },
+  { id: "trim-spaces", name: "Remove Extra Spaces", description: "Collapse multiple spaces", category: "text", keywords: ["whitespace"], route: "/tools/text#clean" },
+  { id: "remove-special", name: "Remove Special Characters", description: "Strip non-alphanumerics", category: "text", keywords: ["punctuation"], route: "/tools/text#clean" },
+  { id: "remove-numbers", name: "Remove Numbers", description: "Strip digits", category: "text", keywords: [], route: "/tools/text#clean" },
+  { id: "remove-lines", name: "Remove Empty Lines", description: "Delete blank lines", category: "text", keywords: [], route: "/tools/text#clean" },
+  { id: "base64-encode", name: "Base64 Encode", description: "Encode to base64", category: "text", keywords: ["b64"], route: "/tools/text#encode" },
+  { id: "base64-decode", name: "Base64 Decode", description: "Decode base64", category: "text", keywords: [], route: "/tools/text#encode" },
+  { id: "url-encode", name: "URL Encode / Decode", description: "Encode and decode URLs", category: "text", keywords: [], route: "/tools/text#encode" },
+  { id: "slugify", name: "Slugify", description: "Make URL-friendly slug", category: "text", keywords: ["seo"], route: "/tools/text#encode" },
+  { id: "sort-lines", name: "Sort Lines", description: "Sort alphabetically", category: "text", keywords: [], route: "/tools/text#lines" },
+  { id: "dedupe", name: "Remove Duplicate Lines", description: "Keep unique lines", category: "text", keywords: [], route: "/tools/text#lines" },
+  { id: "find-replace", name: "Find & Replace", description: "Find and replace text (regex supported)", category: "text", keywords: ["substitute", "regex"], route: "/tools/text#find-replace" },
+  { id: "text-repeat", name: "Repeat Text", description: "Repeat your text N times", category: "text", keywords: ["duplicate"], route: "/tools/text#repeat" },
+  { id: "html-strip", name: "Strip HTML Tags", description: "Remove HTML markup, keep text", category: "text", keywords: ["clean", "markup"], route: "/tools/text#clean" },
+  { id: "word-frequency", name: "Word Frequency", description: "Count how often each word appears", category: "text", keywords: ["analyze", "stats"], route: "/tools/text#frequency" },
+  { id: "binary-convert", name: "Text ↔ Binary", description: "Convert text to and from binary", category: "text", keywords: ["bin", "01"], route: "/tools/text#binary" },
+  { id: "rot13", name: "ROT13 Cipher", description: "Simple ROT13 letter cipher", category: "text", keywords: ["cipher", "obfuscate"], route: "/tools/text#encode" },
+  { id: "text-diff", name: "Text Compare", description: "See differences between two texts", category: "text", keywords: ["diff", "compare"], route: "/tools/text#diff" },
+
+  // PDF
+  { id: "pdf-merge", name: "Merge PDFs", description: "Combine multiple PDFs", category: "pdf", keywords: ["combine"], route: "/tools/pdf#merge" },
+  { id: "pdf-split", name: "Split PDF", description: "Split into pages", category: "pdf", keywords: [], route: "/tools/pdf#split" },
+  { id: "pdf-password", name: "Add Password to PDF", description: "Protect a PDF", category: "pdf", keywords: ["encrypt", "secure"], route: "/tools/pdf#password" },
+  { id: "pdf-rotate", name: "Rotate PDF", description: "Rotate all pages", category: "pdf", keywords: [], route: "/tools/pdf#rotate" },
+  { id: "pdf-reorder", name: "Reorder Pages", description: "Rearrange pages", category: "pdf", keywords: ["organize"], route: "/tools/pdf#reorder" },
+  { id: "pdf-compress", name: "Compress PDF", description: "Basic size reduction", category: "pdf", keywords: ["shrink", "optimize"], route: "/tools/pdf#compress" },
+  { id: "pdf-remove-pages", name: "Remove Pages", description: "Delete specific pages from a PDF", category: "pdf", keywords: ["delete"], route: "/tools/pdf#remove-pages" },
+  { id: "pdf-extract-pages", name: "Extract Pages", description: "Save selected pages as a new PDF", category: "pdf", keywords: ["pages"], route: "/tools/pdf#extract-pages" },
+  { id: "pdf-jpg-to-pdf", name: "JPG / PNG to PDF", description: "Convert images into a PDF", category: "pdf", keywords: ["image", "convert"], route: "/tools/pdf#jpg-to-pdf" },
+  { id: "pdf-to-jpg", name: "PDF to JPG", description: "Export each page as a JPG image", category: "pdf", keywords: ["convert", "image"], route: "/tools/pdf#pdf-to-jpg" },
+  { id: "pdf-page-numbers", name: "Add Page Numbers", description: "Add page numbers to PDF", category: "pdf", keywords: ["numbering"], route: "/tools/pdf#page-numbers" },
+  { id: "pdf-watermark", name: "Add Watermark", description: "Add a text watermark to PDF", category: "pdf", keywords: ["stamp"], route: "/tools/pdf#watermark" },
+  { id: "pdf-crop", name: "Crop PDF", description: "Crop margins from PDF pages", category: "pdf", keywords: ["trim"], route: "/tools/pdf#crop" },
+  { id: "pdf-unlock", name: "Unlock PDF", description: "Remove password from a PDF you own", category: "pdf", keywords: ["decrypt", "remove password"], route: "/tools/pdf#unlock" },
+
+  // IMAGE
+  { id: "img-resize", name: "Resize Image", description: "Change dimensions", category: "image", keywords: ["scale"], route: "/tools/image#resize" },
+  { id: "img-crop", name: "Crop Image", description: "Crop to area", category: "image", keywords: [], route: "/tools/image#crop" },
+  { id: "img-filter", name: "Image Filters", description: "Apply grayscale, sepia, blur", category: "image", keywords: ["effects"], route: "/tools/image#filter" },
+  { id: "img-rotate", name: "Rotate Image", description: "Rotate 90/180/270", category: "image", keywords: [], route: "/tools/image#rotate" },
+  { id: "img-format", name: "Convert Format", description: "JPG / PNG / WebP", category: "image", keywords: ["convert"], route: "/tools/image#format" },
+  { id: "img-metadata", name: "Image Metadata", description: "View dimensions and type", category: "image", keywords: ["exif", "info"], route: "/tools/image#metadata" },
+  { id: "img-compress", name: "Compress Image", description: "Reduce file size with quality slider", category: "image", keywords: ["optimize", "shrink"], route: "/tools/image#compress" },
+  { id: "img-flip", name: "Flip Image", description: "Flip horizontally or vertically", category: "image", keywords: ["mirror"], route: "/tools/image#flip" },
+  { id: "img-watermark", name: "Watermark Image", description: "Add a text watermark to your image", category: "image", keywords: ["stamp", "brand"], route: "/tools/image#watermark" },
+  { id: "img-to-base64", name: "Image to Base64", description: "Encode image as data URL", category: "image", keywords: ["data url", "encode"], route: "/tools/image#base64" },
+  { id: "img-adjust", name: "Brightness & Contrast", description: "Tune brightness, contrast, saturation", category: "image", keywords: ["adjust", "tune"], route: "/tools/image#adjust" },
+
+  // CODE
+  { id: "json-format", name: "JSON Formatter", description: "Beautify JSON with indentation", category: "code", keywords: ["pretty", "beautify"], route: "/tools/code#json-format" },
+  { id: "json-minify", name: "JSON Minifier", description: "Compact JSON output", category: "code", keywords: ["compress"], route: "/tools/code#json-minify" },
+  { id: "xml-format", name: "XML Formatter", description: "Beautify XML / RSS", category: "code", keywords: ["pretty"], route: "/tools/code#xml-format" },
+  { id: "html-minify", name: "HTML Minifier", description: "Strip whitespace from HTML", category: "code", keywords: ["compress"], route: "/tools/code#html-minify" },
+  { id: "css-minify", name: "CSS Minifier", description: "Strip whitespace and comments from CSS", category: "code", keywords: [], route: "/tools/code#css-minify" },
+  { id: "js-minify", name: "JS Minifier", description: "Basic JavaScript minification", category: "code", keywords: [], route: "/tools/code#js-minify" },
+  { id: "sql-format", name: "SQL Formatter", description: "Format SQL queries", category: "code", keywords: ["pretty"], route: "/tools/code#sql-format" },
+  { id: "jwt-decode", name: "JWT Decoder", description: "Decode JSON Web Token", category: "code", keywords: ["token", "auth"], route: "/tools/code#jwt-decode" },
+  { id: "regex-test", name: "Regex Tester", description: "Test regular expressions", category: "code", keywords: ["match"], route: "/tools/code#regex-test" },
+  { id: "uuid-gen", name: "UUID Generator", description: "Generate UUID v4s", category: "code", keywords: ["guid", "id"], route: "/tools/code#uuid-gen" },
+  { id: "hash-gen", name: "Hash Generator (MD5, SHA-1, SHA-256, SHA-512)", description: "MD5, SHA-1, SHA-256, SHA-512 digests", category: "code", keywords: ["md5", "sha", "sha256", "sha1", "sha512", "crypto", "digest"], route: "/tools/code#hash-gen" },
+  { id: "timestamp", name: "Timestamp Converter", description: "Unix epoch ↔ date", category: "code", keywords: ["unix", "epoch"], route: "/tools/code#timestamp" },
+  { id: "color-convert", name: "HEX ↔ RGB", description: "Convert colors between formats", category: "code", keywords: ["color", "hex", "rgb"], route: "/tools/code#color-convert" },
+  { id: "lorem-ipsum", name: "Lorem Ipsum", description: "Generate placeholder text", category: "code", keywords: ["placeholder"], route: "/tools/code#lorem-ipsum" },
+  { id: "html-editor", name: "HTML Live Editor", description: "Live HTML / CSS / JS editor with preview", category: "code", keywords: ["playground", "html", "css", "js", "sandbox"], route: "/tools/code#html-editor" },
+  { id: "markdown-html", name: "Markdown to HTML", description: "Convert Markdown to HTML on the fly", category: "code", keywords: ["md", "markdown", "html", "convert"], route: "/tools/code#markdown" },
+  { id: "number-base", name: "Number Base Converter", description: "Binary, octal, decimal, hexadecimal", category: "code", keywords: ["binary", "hex", "octal", "decimal", "base"], route: "/tools/code#number-base" },
+  { id: "php-format", name: "PHP Formatter", description: "Basic PHP source formatter", category: "code", keywords: ["php", "beautify"], route: "/tools/code#php-format" },
+  { id: "html-format", name: "HTML Formatter", description: "Pretty-print HTML markup", category: "code", keywords: ["html", "beautify", "indent"], route: "/tools/code#html-format" },
+  { id: "phrase-crypt", name: "Phrase Encrypt / Decrypt", description: "AES-GCM symmetric encryption with a passphrase", category: "code", keywords: ["aes", "encrypt", "decrypt", "cipher", "password"], route: "/tools/code#phrase-crypt" },
+  { id: "browser-features", name: "Browser Feature Detection", description: "Check what APIs your browser supports", category: "code", keywords: ["browser", "feature", "support", "detect"], route: "/tools/code#browser-features" },
+  { id: "js-keycodes", name: "JavaScript Keycode Table", description: "Live keycodes, key names and event codes reference", category: "code", keywords: ["keycode", "key code", "javascript", "event.key", "event.code", "keyboard"], route: "/tools/code#js-keycodes" },
+  { id: "html-to-jsx", name: "HTML to JSX Converter", description: "Convert HTML markup into React JSX", category: "code", keywords: ["html", "jsx", "react", "convert", "className"], route: "/tools/code#html-to-jsx" },
+  { id: "html-to-tsx", name: "HTML to TSX Converter", description: "Convert HTML into a typed React TSX component", category: "code", keywords: ["html", "tsx", "typescript", "react", "convert"], route: "/tools/code#html-to-tsx" },
+  { id: "jsx-to-tsx", name: "JSX to TSX Converter", description: "Wrap JSX in a typed TSX component scaffold", category: "code", keywords: ["jsx", "tsx", "typescript", "convert", "react"], route: "/tools/code#jsx-to-tsx" },
+  { id: "tsx-to-jsx", name: "TSX to JSX Converter", description: "Strip TypeScript annotations from TSX to plain JSX", category: "code", keywords: ["tsx", "jsx", "strip types", "convert"], route: "/tools/code#tsx-to-jsx" },
+  { id: "css-to-tailwind", name: "CSS to Tailwind Converter", description: "Map plain CSS declarations to Tailwind utility classes", category: "code", keywords: ["css", "tailwind", "utility", "convert"], route: "/tools/code#css-to-tailwind" },
+  { id: "tailwind-to-css", name: "Tailwind to CSS Converter", description: "Expand Tailwind utility classes back into CSS", category: "code", keywords: ["tailwind", "css", "convert", "expand"], route: "/tools/code#tailwind-to-css" },
+
+  // PASSWORD
+  { id: "pw-generate", name: "Password Generator", description: "Strong passwords with custom rules", category: "password", keywords: ["create", "secure", "random"], route: "/tools/password#generate" },
+  { id: "pw-strength", name: "Password Strength Meter", description: "Check password strength", category: "password", keywords: ["meter", "score", "audit"], route: "/tools/password#strength" },
+  { id: "pw-passphrase", name: "Passphrase Generator", description: "Memorable word-based passwords", category: "password", keywords: ["words", "diceware"], route: "/tools/password#passphrase" },
+  { id: "pw-pin", name: "PIN Generator", description: "Generate numeric PINs", category: "password", keywords: ["numeric"], route: "/tools/password#pin" },
+
+  // COLOR
+  { id: "color-picker", name: "Color Picker", description: "Pick colors and grab any format", category: "color", keywords: ["picker", "eyedropper", "hex", "rgb"], route: "/tools/color#picker" },
+  { id: "color-converter", name: "Color Converter", description: "HEX ↔ RGB ↔ HSL ↔ HWB ↔ CMYK", category: "color", keywords: ["hex", "rgb", "hsl", "hwb", "cmyk", "convert"], route: "/tools/color#converter" },
+  { id: "color-mixer", name: "Color Mixer", description: "Blend two colors to find the in-between", category: "color", keywords: ["blend", "mix", "interpolate"], route: "/tools/color#mixer" },
+  { id: "color-hex", name: "Color HEX Explorer", description: "Hex codes with RGB breakdown, shades and tints", category: "color", keywords: ["hex", "shades", "tints"], route: "/tools/color#hex" },
+  { id: "color-hsl", name: "Colors HSL", description: "Explore colors by hue, saturation, lightness", category: "color", keywords: ["hsl", "hue", "saturation", "lightness"], route: "/tools/color#hsl" },
+  { id: "color-hwb", name: "Colors HWB", description: "Hue, whiteness, blackness (CSS4)", category: "color", keywords: ["hwb", "css4"], route: "/tools/color#hwb" },
+  { id: "color-cmyk", name: "Colors CMYK", description: "Print-ready CMYK values for any color", category: "color", keywords: ["cmyk", "print"], route: "/tools/color#cmyk" },
+  { id: "color-rgb", name: "Colors RGB", description: "RGB channels, previews and conversions", category: "color", keywords: ["rgb", "channels"], route: "/tools/color#rgb" },
+  { id: "color-contrast", name: "Color Contrast Analyzer", description: "WCAG contrast checker for text and UI pairs", category: "color", keywords: ["contrast", "wcag", "accessibility", "a11y"], route: "/tools/color#contrast" },
+  { id: "color-gradient", name: "Color Gradient Builder", description: "Compose multi-stop gradients with copyable CSS", category: "color", keywords: ["gradient", "css", "linear", "radial"], route: "/tools/color#gradient" },
+  { id: "color-tailwind", name: "Tailwind Color Finder", description: "Find the nearest Tailwind class for any color", category: "color", keywords: ["tailwind", "class", "nearest"], route: "/tools/color#tailwind" },
+
+  // PRODUCTIVITY
+  { id: "timer", name: "Timer", description: "Countdown timer with alarm", category: "productivity", keywords: ["countdown", "stopwatch", "clock"], route: "/tools/productivity#timer" },
+  { id: "todo", name: "To-Do List", description: "Simple task list saved locally", category: "productivity", keywords: ["tasks", "checklist", "notes"], route: "/tools/productivity#todo" },
+  { id: "calculator", name: "Calculator", description: "Basic arithmetic calculator", category: "productivity", keywords: ["math", "arithmetic"], route: "/tools/productivity#calculator" },
+  { id: "currency", name: "Currency Converter", description: "Convert between major currencies", category: "productivity", keywords: ["forex", "money", "exchange", "usd", "eur", "inr"], route: "/tools/productivity#currency" },
+  { id: "timezone", name: "Timezone Converter", description: "Convert times across timezones", category: "productivity", keywords: ["tz", "utc", "gmt", "time"], route: "/tools/productivity#timezone" },
+  { id: "unit", name: "Unit Converter", description: "Quick unit conversion", category: "productivity", keywords: ["units", "convert"], route: "/tools/productivity#unit" },
+  { id: "length", name: "Length Converter", description: "Meter, cm, mm, µm, nm, pm, mile, foot, inch", category: "productivity", keywords: ["distance", "meter", "kilometer", "mile", "inch"], route: "/tools/productivity#length" },
+  { id: "mass", name: "Mass / Weight Converter", description: "Tonne, kg, g, mg, µg, lb, oz, carat", category: "productivity", keywords: ["weight", "kilogram", "pound", "gram"], route: "/tools/productivity#mass" },
+  { id: "area", name: "Area Converter", description: "Square meter, ft², acre, hectare", category: "productivity", keywords: ["square", "acre", "hectare"], route: "/tools/productivity#area" },
+  { id: "time-convert", name: "Time Converter", description: "Year, day, hour, minute, ms, µs, ns", category: "productivity", keywords: ["seconds", "minutes", "millisecond", "microsecond"], route: "/tools/productivity#time" },
+  { id: "data", name: "Data Size Converter", description: "Bit, byte, KB, MB, GB, TB, PB", category: "productivity", keywords: ["storage", "bytes", "kilobyte", "megabyte", "gigabyte"], route: "/tools/productivity#data" },
+  { id: "temperature", name: "Temperature Converter", description: "Celsius, Fahrenheit, Kelvin", category: "productivity", keywords: ["celsius", "fahrenheit", "kelvin"], route: "/tools/productivity#temperature" },
+  { id: "finance", name: "Finance Calculator", description: "Loan EMI and investment growth", category: "productivity", keywords: ["loan", "emi", "sip", "investment", "interest"], route: "/tools/productivity#finance" },
+  { id: "date-diff", name: "Date Difference", description: "Years, months, days between two dates", category: "productivity", keywords: ["age", "days between", "duration"], route: "/tools/productivity#date-diff" },
+  { id: "discount", name: "Discount Calculator", description: "Final price after percentage discount", category: "productivity", keywords: ["sale", "off", "price"], route: "/tools/productivity#discount" },
+  { id: "bmi", name: "BMI Calculator", description: "Body Mass Index from height and weight", category: "productivity", keywords: ["health", "body mass index", "weight"], route: "/tools/productivity#bmi" },
+  { id: "gst", name: "GST Calculator", description: "Add or extract GST from an amount", category: "productivity", keywords: ["tax", "vat", "gst", "sales tax"], route: "/tools/productivity#gst" },
+];
