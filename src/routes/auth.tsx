@@ -36,12 +36,13 @@ const emailSchema = z
   .max(50, "Email must be 50 characters or less")
   .regex(emailRegex, "Enter a valid email address");
 
-// Name: 1-50 letters only. No spaces, no digits, no special characters.
+// Name: 1-50 letters and spaces only. No digits, no special characters.
 const nameSchema = z
   .string()
+  .trim() // Automatically removes accidental leading/trailing spaces
   .min(1, "Name is required")
   .max(50, "Name must be 50 characters or less")
-  .regex(/^[A-Za-z]+$/, "Only letters — no spaces, numbers or special characters");
+  .regex(/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Only letters and spaces between words are allowed");
 
 // Strong password 8-20 with lower, upper, digit and special char.
 const passwordSchema = z
@@ -79,14 +80,20 @@ function AuthPage() {
   const handleGoogle = async () => {
     setGoogleBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
-      if (result.error) {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+
+      if (error) {
         toast.error("Google sign-in failed");
         setGoogleBusy(false);
         return;
       }
-      if (result.redirected) return;
-      navigate({ to, replace: true });
+
+      // Browser will redirect to Google, so no navigate() is needed here.
     } catch {
       toast.error("Google sign-in failed");
       setGoogleBusy(false);
@@ -128,7 +135,7 @@ function AuthPage() {
             aria-label="Continue with Google"
             title="Continue with Google"
           >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true"><path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.8 2.5 2.6 6.7 2.6 12s4.2 9.5 9.4 9.5c5.4 0 9-3.8 9-9.2 0-.6-.07-1.1-.16-1.6H12z"/></svg>
+            <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true"><path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.8 2.5 2.6 6.7 2.6 12s4.2 9.5 9.4 9.5c5.4 0 9-3.8 9-9.2 0-.6-.07-1.1-.16-1.6H12z" /></svg>
             {googleBusy ? "Connecting…" : "Continue with Google"}
           </button>
 
@@ -162,9 +169,9 @@ function PasswordInput({ id, autoComplete, register }: { id: string; autoComplet
         className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:text-slate-800 dark:hover:text-white"
       >
         {show ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.8 19.8 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.8 19.8 0 0 1-4.2 5.19M1 1l22 22M9.88 9.88a3 3 0 1 0 4.24 4.24"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.8 19.8 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.8 19.8 0 0 1-4.2 5.19M1 1l22 22M9.88 9.88a3 3 0 1 0 4.24 4.24" /></svg>
         ) : (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" /><circle cx="12" cy="12" r="3" /></svg>
         )}
       </button>
     </div>

@@ -62,7 +62,7 @@ const contactSchema = z.object({
     .string()
     .min(1, "Name is required")
     .max(50, "Name must be 50 characters or less")
-    .regex(/^[A-Za-z]+$/, "Only letters — no spaces, numbers or special characters"),
+    .regex(/^[A-Za-z]+(?: [A-Za-z]+)*$/, "Only letters and spaces between words are allowed"),
   email: z
     .string()
     .trim()
@@ -117,8 +117,7 @@ function Contact() {
   };
 
   const fieldCls = (err?: string) =>
-    `mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-950 dark:text-white ${
-      err ? "border-red-500 focus:border-red-500" : "border-slate-200 focus:border-blue-500 dark:border-slate-700"
+    `mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 dark:bg-slate-950 dark:text-white ${err ? "border-red-500 focus:border-red-500" : "border-slate-200 focus:border-blue-500 dark:border-slate-700"
     }`;
 
   return (
@@ -168,7 +167,7 @@ function Contact() {
             </div>
             <button type="submit" className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700">Send message</button>
             <p role="status" aria-live="polite" className="min-h-[1.25rem] text-sm text-slate-600 dark:text-slate-400">{status}</p>
-            
+
           </form>
         </Reveal>
       </section>
