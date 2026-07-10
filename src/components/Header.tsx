@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth-context";
 import { TOOLS, type ToolCategory } from "@/lib/tools-registry";
 
 const PRIMARY = [
-  { to: "/", label: "Home" },
+  { to: "/", label: "Homea" },
   { to: "/about", label: "About" },
   { to: "/why-choose-us", label: "Why Choose Us" },
   { to: "/pricing", label: "Pricing" },
