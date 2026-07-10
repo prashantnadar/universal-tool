@@ -43,6 +43,12 @@ function AdminPanel() {
   const [tab, setTab] = useState<Tab>("overview");
   const [err, setErr] = useState<string | null>(null);
 
+  const SUPER_ADMIN_ID = "f0a17059-c9ac-46e1-859c-82bd1487f069";
+
+  const isSuperAdmin =
+    user?.id === SUPER_ADMIN_ID ||
+    user?.email?.toLowerCase() === "prashantnadar18@gmail.com";
+
   return (
     <Layout>
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -51,7 +57,16 @@ function AdminPanel() {
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Admin panel</h1>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Signed in as {user?.email}</p>
           </div>
-          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">ADMIN</span>
+          {/* <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">ADMIN</span> */}
+          {isSuperAdmin ? (
+            <span className="rounded-full bg-yellow-400 px-3 py-1 text-xs font-bold text-black">
+              👑 SUPER ADMIN
+            </span>
+          ) : (
+            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+              ADMIN
+            </span>
+          )}
         </div>
 
         <nav className="mt-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
@@ -59,11 +74,10 @@ function AdminPanel() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-4 py-2 text-sm font-medium capitalize transition-colors ${
-                tab === t
-                  ? "border-b-2 border-blue-600 text-blue-700 dark:text-blue-300"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+              className={`px-4 py-2 text-sm font-medium capitalize transition-colors ${tab === t
+                ? "border-b-2 border-blue-600 text-blue-700 dark:text-blue-300"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                }`}
             >
               {t === "audit" ? "Audit logs" : t === "usage" ? "Usage logs" : t}
             </button>
@@ -285,12 +299,20 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
   });
 
   async function togglePlan(u: AdminUser) {
+    if (u.email?.toLowerCase() === "prashantnadar18@gmail.com") {
+      alert("Super Admin plan cannot be changed.");
+      return;
+    }
     setBusyId(u.user_id);
     try { await adminSetPlan(u.user_id, u.plan === "premium" ? "free" : "premium"); await load(); }
     catch (e) { onErr((e as Error).message); }
     finally { setBusyId(null); }
   }
   async function toggleAdmin(u: AdminUser) {
+    if (u.email?.toLowerCase() === "prashantnadar18@gmail.com") {
+      alert("Super Admin role cannot be modified.");
+      return;
+    }
     if (!confirm(u.is_admin ? `Revoke admin from ${u.email}?` : `Grant admin to ${u.email}?`)) return;
     setBusyId(u.user_id);
     try { await adminSetRole(u.user_id, "admin", !u.is_admin); await load(); }
@@ -331,16 +353,41 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
                 <tr key={u.user_id}>
                   <td className="py-2 text-slate-800 dark:text-slate-200">{u.email}</td>
                   <td><PlanBadge plan={u.plan} /></td>
-                  <td>{u.is_admin ? <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">admin</span> : <span className="text-xs text-slate-500">user</span>}</td>
+                  <td>
+                    {u.email?.toLowerCase() === "prashantnadar18@gmail.com" ? (
+                      <span className="rounded-full bg-yellow-400 px-2 py-0.5 text-xs font-bold text-black animate-pulse">
+                        👑 SUPER ADMIN
+                      </span>
+                    ) : u.is_admin ? (
+                      <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 animate-pulse">
+                        ADMIN
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-500">USER</span>
+                    )}
+                  </td>
                   <td className="tabular-nums">{u.usage_24h}</td>
                   <td className="text-xs text-slate-500">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="py-2 text-right">
                     <button onClick={() => openHistory(u)} className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium dark:border-slate-700 dark:text-white">History</button>
-                    <button onClick={() => togglePlan(u)} disabled={busyId === u.user_id}
+                    <button
+                      onClick={() => togglePlan(u)}
+                      disabled={
+                        busyId === u.user_id ||
+                        u.email?.toLowerCase() === "prashantnadar18@gmail.com"
+                      }
+                    > disabled={busyId === u.user_id}
                       className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white">
                       {u.plan === "premium" ? "Downgrade" : "Upgrade"}
                     </button>
-                    <button onClick={() => toggleAdmin(u)} disabled={busyId === u.user_id || u.user_id === currentUserId}
+                    <button
+                      onClick={() => toggleAdmin(u)}
+                      disabled={
+                        busyId === u.user_id ||
+                        u.user_id === currentUserId ||
+                        u.email?.toLowerCase() === "prashantnadar18@gmail.com"
+                      }
+                    > disabled={busyId === u.user_id || u.user_id === currentUserId}
                       className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white">
                       {u.is_admin ? "Revoke admin" : "Make admin"}
                     </button>
@@ -409,7 +456,7 @@ function UsageTab({ onErr }: { onErr: (m: string | null) => void }) {
     if (kind !== "all") qs.set("kind", kind);
     if (from) qs.set("from", new Date(from).toISOString());
     if (to) qs.set("to", new Date(to).toISOString());
-    downloadCsv(`/api/admin/export/tool-usage?${qs.toString()}`, `tool-usage-${new Date().toISOString().slice(0,10)}.csv`)
+    downloadCsv(`/api/admin/export/tool-usage?${qs.toString()}`, `tool-usage-${new Date().toISOString().slice(0, 10)}.csv`)
       .catch((e) => onErr((e as Error).message));
   }
 
@@ -442,7 +489,7 @@ function UsageTab({ onErr }: { onErr: (m: string | null) => void }) {
                 <tr key={i}>
                   <td className="py-2 text-xs text-slate-500">{new Date(r.created_at).toLocaleString()}</td>
                   <td><KindBadge kind={r.kind} /></td>
-                  <td className="text-slate-800 dark:text-slate-200">{r.kind === "user" ? (r.email || r.actor_key.slice(0,8)) : <span className="font-mono text-xs">guest·{r.actor_key.slice(0,8)}</span>}</td>
+                  <td className="text-slate-800 dark:text-slate-200">{r.kind === "user" ? (r.email || r.actor_key.slice(0, 8)) : <span className="font-mono text-xs">guest·{r.actor_key.slice(0, 8)}</span>}</td>
                   <td className="font-mono text-xs">{r.tool_slug}</td>
                   <td className="text-xs">{r.country_code || "—"}</td>
                 </tr>
@@ -488,7 +535,7 @@ function AuditTab({ onErr }: { onErr: (m: string | null) => void }) {
     if (actor) qs.set("actor", actor);
     if (from) qs.set("from", new Date(from).toISOString());
     if (to) qs.set("to", new Date(to).toISOString());
-    downloadCsv(`/api/admin/export/audit-logs?${qs.toString()}`, `audit-logs-${new Date().toISOString().slice(0,10)}.csv`)
+    downloadCsv(`/api/admin/export/audit-logs?${qs.toString()}`, `audit-logs-${new Date().toISOString().slice(0, 10)}.csv`)
       .catch((e) => onErr((e as Error).message));
   }
 
@@ -513,7 +560,7 @@ function AuditTab({ onErr }: { onErr: (m: string | null) => void }) {
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td className="py-2 text-xs text-slate-500">{new Date(r.created_at).toLocaleString()}</td>
-                  <td className="text-slate-800 dark:text-slate-200">{r.email || (r.actor_id ? r.actor_id.slice(0,8) : "—")}</td>
+                  <td className="text-slate-800 dark:text-slate-200">{r.email || (r.actor_id ? r.actor_id.slice(0, 8) : "—")}</td>
                   <td className="font-mono text-xs">{r.action}</td>
                   <td className="max-w-[24rem] truncate text-xs text-slate-500" title={JSON.stringify(r.metadata)}>{JSON.stringify(r.metadata)}</td>
                 </tr>
@@ -551,8 +598,8 @@ function Stat({ label, value }: { label: string; value: number | string }) {
 function PlanBadge({ plan }: { plan: string }) {
   const cls = plan === "premium" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
     : plan === "admin" ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
-    : plan === "guest" ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-    : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+      : plan === "guest" ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+        : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
   return <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${cls}`}>{plan}</span>;
 }
 function KindBadge({ kind }: { kind: "user" | "guest" }) {
