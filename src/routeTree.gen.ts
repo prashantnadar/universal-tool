@@ -32,6 +32,7 @@ import { Route as ToolsColorRouteImport } from './routes/tools.color'
 import { Route as ToolsCodeRouteImport } from './routes/tools.code'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
+import { Route as AuthenticatedAdminProfileRouteImport } from './routes/_authenticated/_admin/profile'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
 import { Route as ApiAdminExportToolUsageRouteImport } from './routes/api/admin/export.tool-usage'
 import { Route as ApiAdminExportAuditLogsRouteImport } from './routes/api/admin/export.audit-logs'
@@ -149,6 +150,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminProfileRoute =
+  AuthenticatedAdminProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -188,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/tools/productivity': typeof ToolsProductivityRoute
   '/tools/text': typeof ToolsTextRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
+  '/profile': typeof AuthenticatedAdminProfileRoute
   '/api/admin/export/audit-logs': typeof ApiAdminExportAuditLogsRoute
   '/api/admin/export/tool-usage': typeof ApiAdminExportToolUsageRoute
 }
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/tools/productivity': typeof ToolsProductivityRoute
   '/tools/text': typeof ToolsTextRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
+  '/profile': typeof AuthenticatedAdminProfileRoute
   '/api/admin/export/audit-logs': typeof ApiAdminExportAuditLogsRoute
   '/api/admin/export/tool-usage': typeof ApiAdminExportToolUsageRoute
 }
@@ -243,6 +252,7 @@ export interface FileRoutesById {
   '/tools/productivity': typeof ToolsProductivityRoute
   '/tools/text': typeof ToolsTextRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRoute
+  '/_authenticated/_admin/profile': typeof AuthenticatedAdminProfileRoute
   '/api/admin/export/audit-logs': typeof ApiAdminExportAuditLogsRoute
   '/api/admin/export/tool-usage': typeof ApiAdminExportToolUsageRoute
 }
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/tools/productivity'
     | '/tools/text'
     | '/admin'
+    | '/profile'
     | '/api/admin/export/audit-logs'
     | '/api/admin/export/tool-usage'
   fileRoutesByTo: FileRoutesByTo
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/tools/productivity'
     | '/tools/text'
     | '/admin'
+    | '/profile'
     | '/api/admin/export/audit-logs'
     | '/api/admin/export/tool-usage'
   id:
@@ -325,6 +337,7 @@ export interface FileRouteTypes {
     | '/tools/productivity'
     | '/tools/text'
     | '/_authenticated/_admin/admin'
+    | '/_authenticated/_admin/profile'
     | '/api/admin/export/audit-logs'
     | '/api/admin/export/tool-usage'
   fileRoutesById: FileRoutesById
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/_admin/profile': {
+      id: '/_authenticated/_admin/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedAdminProfileRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/_admin/admin': {
       id: '/_authenticated/_admin/admin'
       path: '/admin'
@@ -544,10 +564,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAdminRoute: typeof AuthenticatedAdminAdminRoute
+  AuthenticatedAdminProfileRoute: typeof AuthenticatedAdminProfileRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAdminRoute: AuthenticatedAdminAdminRoute,
+  AuthenticatedAdminProfileRoute: AuthenticatedAdminProfileRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
