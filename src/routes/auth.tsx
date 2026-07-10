@@ -190,7 +190,6 @@ function SignInForm({ to }: { to: string }) {
     }
     reset({ email: "", password: "" });
     toast.success("Signed in");
-    navigate({ to, replace: true });
   };
 
   return (
@@ -226,7 +225,6 @@ function SignUpForm({ to }: { to: string }) {
     }
     reset({ email: "", password: "", display_name: "" });
     toast.success("Account created");
-    navigate({ to, replace: true });
   };
 
   return (
