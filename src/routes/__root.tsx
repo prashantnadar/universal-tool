@@ -62,6 +62,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/favicon.png" },
     ],
     scripts: [
+      // 1. Load Google Analytics library asynchronously
+      {
+        src: "https://googletagmanager.com",
+        async: true,
+      },
+      // 2. Initialize tracking tags
+      {
+        children: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-9FXMNKTXKF');
+        `,
+      },
+      // 3. Existing Schema JSON-LD script
       {
         type: "application/ld+json",
         children: JSON.stringify({
