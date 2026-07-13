@@ -103,7 +103,7 @@ function Home() {
   return (
     <Layout>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-slate-200 bg-gradient-to-b from-blue-50/60 via-white to-white dark:border-slate-800 dark:from-blue-950/40 dark:via-slate-950 dark:to-slate-950">
+      <section className="relative overflow-hidden border-b border-slate-200 bg-linear-to-b from-blue-50/60 via-white to-white dark:border-slate-800 dark:from-blue-950/40 dark:via-slate-950 dark:to-slate-950">
         <div className="absolute inset-x-0 top-0 -z-10 h-[480px] bg-[radial-gradient(closest-side,rgba(37,99,235,0.18),transparent)]" aria-hidden />
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mx-auto max-w-3xl text-center">
@@ -111,7 +111,7 @@ function Home() {
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" /> {TOOLS.length}+ tools · runs in your browser · no uploads
             </span>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl dark:text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              One toolkit for <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">everything you write,</span> <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">code and share.</span>
+              One toolkit for <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">everything you write,</span> <span className="bg-linear-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">code and share.</span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600 dark:text-slate-300">
               Text, PDF, image, code and password utilities — all in your browser. Nothing leaves your device.

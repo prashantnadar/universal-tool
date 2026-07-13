@@ -76,11 +76,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED" && event !== "TOKEN_REFRESHED") return;
       setSession(nextSession);
       // Defer async work to avoid deadlocks in the callback
-      setTimeout(async () => {
+      (async () => {
         await applyUser(nextSession?.user ?? null);
+
         router.invalidate();
-        if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
-      }, 0);
+
+        if (event !== "SIGNED_OUT") {
+          queryClient.invalidateQueries();
+        }
+      })();
     });
 
     return () => {
@@ -98,9 +102,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refresh = async () => {
-    if (user) await applyUser(user);
-  };
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
+    setSession(session);
+
+    await applyUser(session?.user ?? null);
+  };
   const value = useMemo<AuthState>(
     () => ({
       loading,

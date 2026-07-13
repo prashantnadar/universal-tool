@@ -59,7 +59,7 @@ function AdminPanel() {
           </div>
           {/* <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">ADMIN</span> */}
           {isSuperAdmin ? (
-            <span className="rounded-full bg-yellow-400 px-3 py-1 text-xs font-bold text-black">
+            <span className="rounded-full bg-blue-400 dark:bg-blue-500 px-2 py-1 text-xs font-bold text-white dark:text-white animate-pulse">
               👑 SUPER ADMIN
             </span>
           ) : (
@@ -355,7 +355,7 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
                   <td><PlanBadge plan={u.plan} /></td>
                   <td>
                     {u.email?.toLowerCase() === "prashantnadar18@gmail.com" ? (
-                      <span className="rounded-full bg-yellow-400 px-2 py-0.5 text-xs font-bold text-black animate-pulse">
+                      <span className="rounded-full bg-blue-400 dark:bg-blue-500 px-2 py-1 text-xs font-bold text-white dark:text-white animate-pulse">
                         👑 SUPER ADMIN
                       </span>
                     ) : u.is_admin ? (
@@ -372,23 +372,23 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
                     <button onClick={() => openHistory(u)} className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium dark:border-slate-700 dark:text-white">History</button>
                     <button
                       onClick={() => togglePlan(u)}
+                      className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white"
                       disabled={
                         busyId === u.user_id ||
                         u.email?.toLowerCase() === "prashantnadar18@gmail.com"
                       }
                     > disabled={busyId === u.user_id}
-                      className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white">
                       {u.plan === "premium" ? "Downgrade" : "Upgrade"}
                     </button>
                     <button
                       onClick={() => toggleAdmin(u)}
+                      className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white"
                       disabled={
                         busyId === u.user_id ||
                         u.user_id === currentUserId ||
                         u.email?.toLowerCase() === "prashantnadar18@gmail.com"
                       }
                     > disabled={busyId === u.user_id || u.user_id === currentUserId}
-                      className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white">
                       {u.is_admin ? "Revoke admin" : "Make admin"}
                     </button>
                   </td>

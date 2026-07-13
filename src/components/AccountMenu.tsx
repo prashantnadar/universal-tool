@@ -27,9 +27,25 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
     );
   }
 
-  const name = (user?.user_metadata?.display_name as string | undefined) || user?.email || "Account";
-  const initial = (name[0] || "?").toUpperCase();
+  const name =
+    (user?.user_metadata?.display_name as string | undefined) ||
+    user?.email ||
+    "Account";
 
+  // Uploaded avatar (from your Profile page)
+  const uploadedAvatar =
+    (user?.user_metadata?.avatar_url as string | undefined) ?? "";
+
+  // Google avatar (available for OAuth users)
+  const googleAvatar =
+    (user?.identities?.find(
+      (identity) => identity.provider === "google"
+    )?.identity_data as { avatar_url?: string } | undefined)?.avatar_url ?? "";
+
+  // Prefer uploaded avatar, otherwise Google avatar
+  const avatar = uploadedAvatar || googleAvatar;
+
+  const initial = (name.trim().charAt(0) || "?").toUpperCase();
   return (
     <div ref={ref} className={`relative ${compact ? "" : "hidden sm:block"}`}>
       <button
@@ -41,9 +57,20 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
         title="Account"
         className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm font-medium text-slate-700 hover:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
       >
-        <span className="grid h-6 w-6 place-items-center rounded-full bg-blue-600 text-xs font-bold text-white">{initial}</span>
+        {avatar ? (
+          <img
+            src={avatar}
+            alt={name}
+            className="h-8 w-8 rounded-full object-cover border border-slate-300 dark:border-slate-700"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white">
+            {initial}
+          </div>
+        )}
         <span className="max-w-[110px] truncate">{name}</span>
-        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {open && (
         <div role="menu" className="absolute right-0 top-full z-40 mt-2 w-56 rounded-xl border border-slate-200 bg-white p-1 shadow-2xl dark:border-slate-800 dark:bg-slate-950">
@@ -55,11 +82,13 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
             </div>
           </div>
           <Link to="/dashboard" onClick={() => setOpen(false)} role="menuitem" className="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900">Dashboard</Link>
+          <Link to="/profile" onClick={() => setOpen(false)} role="menuitem" className="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900">Profile</Link>
           {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} role="menuitem" className="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900">Admin panel</Link>}
           <Link to="/pricing" onClick={() => setOpen(false)} role="menuitem" className="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900">Pricing</Link>
           <button type="button" onClick={() => { setOpen(false); void signOut(); }} role="menuitem" className="w-full rounded-md px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40">Sign out</button>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
