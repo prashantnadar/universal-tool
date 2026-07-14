@@ -5,6 +5,8 @@ import { Layout } from "@/components/Layout";
 import { Reveal } from "@/components/Reveal";
 import { CopyInline } from "@/components/CopyInline";
 import { SITE_URL, imageMeta } from "@/lib/seo";
+import Swal from "sweetalert2";
+import { submitContactMessage } from "@/lib/contact-api";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -50,6 +52,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 
+
 const EMAIL = "prashantnadar2223@gmail.com";
 const PHONE_DISPLAY = "+91 96533 86506";
 const PHONE_TEL = "+919653386506";
@@ -85,35 +88,77 @@ const contactSchema = z.object({
 
 type Errors = Partial<Record<keyof z.infer<typeof contactSchema>, string>>;
 
+
 function Contact() {
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const clearFieldError = (field: keyof Errors) => {
+    if (!errors[field]) return;
+
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
+
+    if (loading) return;
+
+    const form = e.currentTarget;
+
+    const data = new FormData(form);
+
     const parsed = contactSchema.safeParse({
       name: data.get("name"),
       email: data.get("email"),
       subject: data.get("subject"),
       message: data.get("message"),
     });
+
     if (!parsed.success) {
       const errs: Errors = {};
+
       for (const issue of parsed.error.issues) {
         const k = issue.path[0] as keyof Errors;
         if (k && !errs[k]) errs[k] = issue.message;
       }
+
       setErrors(errs);
       setStatus("Please fix the highlighted fields.");
+
       return;
     }
+
     setErrors({});
-    const { name, email, subject, message } = parsed.data;
-    const body = `Hi Prashant,\n\n${message}\n\n— ${name}\nReply-to: ${email}`;
-    const url = `mailto:${EMAIL}?subject=${encodeURIComponent(`[UniversalTools] ${subject}`)}&body=${encodeURIComponent(body)}`;
-    setStatus("Opening your email app…");
-    window.location.href = url;
+    setStatus("");
+    setLoading(true);
+
+    try {
+      await submitContactMessage(parsed.data);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Message sent",
+        text: "Thank you for contacting UniversalTools. We'll get back to you soon.",
+        confirmButtonColor: "#2563eb",
+      });
+
+      form.reset();
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        title: "Couldn't send message",
+        text: "We couldn't submit your message right now. Please check your connection and try again.",
+        confirmButtonColor: "#dc2626",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fieldCls = (err?: string) =>
@@ -140,35 +185,43 @@ function Contact() {
           </div>
         </Reveal>
         <Reveal delay={0.1}>
-          <form
-            onSubmit={onSubmit}
-            noValidate
-            className="mt-10 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
-          >
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Name<span aria-hidden className="text-red-500"> *</span></label>
-              <input id="name" name="name" required maxLength={50} aria-invalid={!!errors.name} aria-describedby={errors.name ? "name-err" : undefined} className={fieldCls(errors.name)} />
-              {errors.name && <p id="name-err" className="mt-1 text-xs text-red-600">{errors.name}</p>}
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Email<span aria-hidden className="text-red-500"> *</span></label>
-              <input id="email" name="email" type="email" required maxLength={50} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-err" : undefined} className={fieldCls(errors.email)} />
-              {errors.email && <p id="email-err" className="mt-1 text-xs text-red-600">{errors.email}</p>}
-            </div>
-            <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Subject<span aria-hidden className="text-red-500"> *</span></label>
-              <input id="subject" name="subject" required minLength={10} maxLength={100} aria-invalid={!!errors.subject} aria-describedby={errors.subject ? "subject-err" : undefined} className={fieldCls(errors.subject)} />
-              {errors.subject && <p id="subject-err" className="mt-1 text-xs text-red-600">{errors.subject}</p>}
-            </div>
-            <div>
-              <label htmlFor="msg" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Message<span aria-hidden className="text-red-500"> *</span></label>
-              <textarea id="msg" name="message" required minLength={20} maxLength={500} rows={5} aria-invalid={!!errors.message} aria-describedby={errors.message ? "msg-err" : undefined} className={fieldCls(errors.message)} />
-              {errors.message && <p id="msg-err" className="mt-1 text-xs text-red-600">{errors.message}</p>}
-            </div>
-            <button type="submit" className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700">Send message</button>
-            <p role="status" aria-live="polite" className="min-h-[1.25rem] text-sm text-slate-600 dark:text-slate-400">{status}</p>
+          <fieldset disabled={loading} className="space-y-4">
+            <form
+              onSubmit={onSubmit}
+              noValidate
+              className="mt-10 space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            >
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Name<span aria-hidden className="text-red-500"> *</span></label>
+                <input id="name" onChange={() => clearFieldError("name")} autoComplete="name" name="name" required maxLength={50} aria-invalid={!!errors.name} aria-describedby={errors.name ? "name-err" : undefined} className={fieldCls(errors.name)} />
+                {errors.name && <p id="name-err" className="mt-1 text-xs text-red-600">{errors.name}</p>}
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Email<span aria-hidden className="text-red-500"> *</span></label>
+                <input id="email" onChange={() => clearFieldError("email")} autoComplete="email" name="email" type="email" required maxLength={50} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-err" : undefined} className={fieldCls(errors.email)} />
+                {errors.email && <p id="email-err" className="mt-1 text-xs text-red-600">{errors.email}</p>}
+              </div>
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Subject<span aria-hidden className="text-red-500"> *</span></label>
+                <input id="subject" onChange={() => clearFieldError("subject")} autoComplete="off" name="subject" required minLength={10} maxLength={100} aria-invalid={!!errors.subject} aria-describedby={errors.subject ? "subject-err" : undefined} className={fieldCls(errors.subject)} />
+                {errors.subject && <p id="subject-err" className="mt-1 text-xs text-red-600">{errors.subject}</p>}
+              </div>
+              <div>
+                <label htmlFor="msg" className="block text-sm font-medium text-slate-700 dark:text-slate-200">Message<span aria-hidden className="text-red-500"> *</span></label>
+                <textarea id="msg" onChange={() => clearFieldError("message")} autoComplete="off" name="message" required minLength={20} maxLength={500} rows={5} aria-invalid={!!errors.message} aria-describedby={errors.message ? "msg-err" : undefined} className={fieldCls(errors.message)} />
+                {errors.message && <p id="msg-err" className="mt-1 text-xs text-red-600">{errors.message}</p>}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white shadow-sm shadow-blue-600/30 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? "Sending your message..." : "Send Message"}
+              </button>
+              <p role="status" aria-live="polite" className="min-h-[1.25rem] text-sm text-slate-600 dark:text-slate-400">{status}</p>
 
-          </form>
+            </form>
+          </fieldset>
         </Reveal>
       </section>
     </Layout>

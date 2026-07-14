@@ -410,51 +410,51 @@ function ProfilePage() {
     }
 
 
-    async function handleDeleteAccount() {
-        const { value } = await Swal.fire({
-            icon: "warning",
-            title: "Delete Account",
-            html: `
-            <p style="margin-bottom:12px">
-                This action is permanent and cannot be undone.
-            </p>
+    // async function handleDeleteAccount() {
+    //     const { value } = await Swal.fire({
+    //         icon: "warning",
+    //         title: "Delete Account",
+    //         html: `
+    //         <p style="margin-bottom:12px">
+    //             This action is permanent and cannot be undone.
+    //         </p>
 
-            <p style="margin-bottom:12px">
-                Type <b>DELETE</b> below to continue.
-            </p>
-        `,
-            input: "text",
-            inputPlaceholder: "Type DELETE",
-            confirmButtonText: "Delete Account",
-            confirmButtonColor: "#dc2626",
-            showCancelButton: true,
-        });
+    //         <p style="margin-bottom:12px">
+    //             Type <b>DELETE</b> below to continue.
+    //         </p>
+    //     `,
+    //         input: "text",
+    //         inputPlaceholder: "Type DELETE",
+    //         confirmButtonText: "Delete Account",
+    //         confirmButtonColor: "#dc2626",
+    //         showCancelButton: true,
+    //     });
 
-        if (value !== "DELETE") {
-            return;
-        }
+    //     if (value !== "DELETE") {
+    //         return;
+    //     }
 
-        try {
-            await deleteAccount();
+    //     try {
+    //         await deleteAccount();
 
-            await Swal.fire({
-                icon: "success",
-                title: "Account Deleted",
-                text: "Your account has been deleted successfully.",
-            });
+    //         await Swal.fire({
+    //             icon: "success",
+    //             title: "Account Deleted",
+    //             text: "Your account has been deleted successfully.",
+    //         });
 
-            await signOut();
+    //         await signOut();
 
-        } catch (err: any) {
+    //     } catch (err: any) {
 
-            Swal.fire({
-                icon: "error",
-                title: "Delete Failed",
-                text: err.message,
-            });
+    //         Swal.fire({
+    //             icon: "error",
+    //             title: "Delete Failed",
+    //             text: err.message,
+    //         });
 
-        }
-    }
+    //     }
+    // }
 
     if (loading) {
         return (
@@ -836,7 +836,7 @@ function ProfilePage() {
                         </div>
                         {/* Danger Zone */}
 
-                        <div className="rounded-2xl border border-red-300 bg-red-50 p-6 shadow-sm dark:border-red-900 dark:bg-red-950/20">
+                        {/* <div className="rounded-2xl border border-red-300 bg-red-50 p-6 shadow-sm dark:border-red-900 dark:bg-red-950/20">
 
                             <h2 className="text-lg font-bold text-red-600">
                                 ⚠ Danger Zone
@@ -855,7 +855,7 @@ function ProfilePage() {
                                 Delete Account
                             </button>
 
-                        </div>
+                        </div> */}
                     </div>
 
                 </div>

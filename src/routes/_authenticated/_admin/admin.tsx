@@ -3,10 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
+
 import {
   adminActiveUsers,
   adminAuditSearch,
   adminDailyTotals,
+  adminDeleteContactMessage,
+  adminListContactMessages,
+  adminMarkContactRead,
   adminListUsers,
   adminSetPlan,
   adminSetRole,
@@ -19,11 +23,13 @@ import {
   type AdminStats,
   type AdminUser,
   type AuditRow,
+  type ContactMessageRow,
   type DailyTotal,
   type ToolLeaderRow,
   type UsageSearchRow,
   type UserHistoryRow,
 } from "@/lib/admin-api";
+
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin")({
@@ -36,7 +42,13 @@ export const Route = createFileRoute("/_authenticated/_admin/admin")({
   component: AdminPanel,
 });
 
-type Tab = "overview" | "live" | "users" | "usage" | "audit";
+type Tab =
+  | "overview"
+  | "live"
+  | "users"
+  | "usage"
+  | "audit"
+  | "contact";
 
 function AdminPanel() {
   const { user } = useAuth();
@@ -70,7 +82,7 @@ function AdminPanel() {
         </div>
 
         <nav className="mt-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
-          {(["overview", "live", "users", "usage", "audit"] as Tab[]).map((t) => (
+          {(["overview", "live", "users", "usage", "audit", "contact"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -92,6 +104,7 @@ function AdminPanel() {
           {tab === "users" && <UsersTab onErr={setErr} currentUserId={user?.id} />}
           {tab === "usage" && <UsageTab onErr={setErr} />}
           {tab === "audit" && <AuditTab onErr={setErr} />}
+          {tab === "contact" && <ContactMessagesTab onErr={setErr} />}
         </div>
       </section>
     </Layout>
@@ -377,7 +390,7 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
                         busyId === u.user_id ||
                         u.email?.toLowerCase() === "prashantnadar18@gmail.com"
                       }
-                    > disabled={busyId === u.user_id}
+                    >
                       {u.plan === "premium" ? "Downgrade" : "Upgrade"}
                     </button>
                     <button
@@ -388,7 +401,7 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
                         u.user_id === currentUserId ||
                         u.email?.toLowerCase() === "prashantnadar18@gmail.com"
                       }
-                    > disabled={busyId === u.user_id || u.user_id === currentUserId}
+                    >
                       {u.is_admin ? "Revoke admin" : "Make admin"}
                     </button>
                   </td>
@@ -587,6 +600,247 @@ function Card({ title, right, children }: { title: string; right?: React.ReactNo
     </div>
   );
 }
+
+/* -------------------- Contact Messages -------------------- */
+
+function ContactMessagesTab({
+  onErr,
+}: {
+  onErr: (m: string | null) => void;
+}) {
+  const [messages, setMessages] = useState<ContactMessageRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+
+    try {
+      const rows = await adminListContactMessages();
+
+      setMessages(rows);
+
+      onErr(null);
+    } catch (e) {
+      onErr((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function toggleRead(row: ContactMessageRow) {
+    setBusyId(row.id);
+
+    try {
+      await adminMarkContactRead(row.id, !row.is_read);
+
+      await load();
+    } catch (e) {
+      onErr((e as Error).message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function remove(row: ContactMessageRow) {
+    if (!confirm("Archive this message?")) return;
+
+    setBusyId(row.id);
+
+    try {
+      await adminDeleteContactMessage(row.id);
+
+      await load();
+    } catch (e) {
+      onErr((e as Error).message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+  const [selected, setSelected] = useState<ContactMessageRow | null>(null);
+  return (
+    <Card
+      title={`Contact Messages (${messages.length})`}
+      right={
+        <button
+          onClick={load}
+          className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium dark:border-slate-700 dark:text-white"
+        >
+          Refresh
+        </button>
+      }
+    >
+      {loading ? (
+        <p className="text-sm text-slate-500">Loading...</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-xs uppercase text-slate-500">
+              <tr>
+                <th className="py-2">Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {messages.map((row) => (
+                <tr key={row.id}>
+                  <td className="py-3 font-medium text-slate-900 dark:text-white">
+                    {row.name}
+                  </td>
+
+                  <td>
+                    <a
+                      href={`mailto:${row.email}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {row.email}
+                    </a>
+                  </td>
+
+                  <td className="max-w-xs truncate">
+                    {row.subject}
+                  </td>
+
+                  <td>
+                    {row.is_read ? (
+                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
+                        Read
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
+                        Unread
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="text-xs text-slate-500">
+                    {new Date(row.created_at).toLocaleString()}
+                  </td>
+
+                  <td className="text-right">
+                    <button
+                      onClick={() => setSelected(row)}
+                      className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium dark:border-slate-700 dark:text-white"
+                    >
+                      View
+                    </button>
+
+                    <button
+                      disabled={busyId === row.id}
+                      onClick={() => toggleRead(row)}
+                      className="mr-2 rounded-md border border-slate-200 px-2 py-1 text-xs font-medium disabled:opacity-50 dark:border-slate-700 dark:text-white"
+                    >
+                      {row.is_read ? "Unread" : "Read"}
+                    </button>
+
+                    <button
+                      disabled={busyId === row.id}
+                      onClick={() => remove(row)}
+                      className="rounded-md border border-red-300 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                    >
+                      Archive
+                    </button>
+                  </td>
+                </tr>
+              ))}
+
+              {!messages.length && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="py-6 text-center text-sm text-slate-500"
+                  >
+                    No contact messages found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {selected && (
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-black/40"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="h-full w-full max-w-2xl overflow-y-auto bg-white p-6 shadow-xl dark:bg-slate-900"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                Contact Message
+              </h2>
+
+              <button
+                onClick={() => setSelected(null)}
+                className="text-xl text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-5">
+
+              <div>
+                <p className="text-xs uppercase text-slate-500">Name</p>
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {selected.name}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase text-slate-500">Email</p>
+
+                <a
+                  href={`mailto:${selected.email}`}
+                  className="mt-1 block text-blue-600 hover:underline"
+                >
+                  {selected.email}
+                </a>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase text-slate-500">Subject</p>
+
+                <p className="mt-1 font-medium text-slate-900 dark:text-white">
+                  {selected.subject}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase text-slate-500">Received</p>
+
+                <p className="mt-1 text-slate-700 dark:text-slate-300">
+                  {new Date(selected.created_at).toLocaleString()}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase text-slate-500">Message</p>
+
+                <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-4 whitespace-pre-wrap text-sm leading-7 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                  {selected.message}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">

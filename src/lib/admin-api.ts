@@ -73,6 +73,16 @@ export type AuditRow = {
   created_at: string;
 };
 
+export type ContactMessageRow = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+};
+
 export type UserHistoryRow = {
   id: string;
   tool_slug: string;
@@ -123,8 +133,16 @@ export async function adminToolLeaderboard(days = 7): Promise<ToolLeaderRow[]> {
   return (data ?? []) as ToolLeaderRow[];
 }
 
-export async function adminUserHistory(userId: string, limit = 100, offset = 0): Promise<UserHistoryRow[]> {
-  const { data, error } = await rpc("admin_user_history", { _target: userId, _limit: limit, _offset: offset });
+export async function adminUserHistory(
+  userId: string,
+  limit = 100,
+  offset = 0,
+): Promise<UserHistoryRow[]> {
+  const { data, error } = await rpc("admin_user_history", {
+    _target: userId,
+    _limit: limit,
+    _offset: offset,
+  });
   if (error) throw error;
   return (data ?? []) as UserHistoryRow[];
 }
@@ -175,6 +193,37 @@ export async function adminAuditSearch(f: AuditSearchFilters = {}): Promise<Audi
   return (data ?? []) as AuditRow[];
 }
 
+export async function adminListContactMessages(
+  limit = 100,
+  offset = 0,
+): Promise<ContactMessageRow[]> {
+  const { data, error } = await rpc("admin_list_contact_messages", {
+    _limit: limit,
+    _offset: offset,
+  });
+
+  if (error) throw error;
+
+  return (data ?? []) as ContactMessageRow[];
+}
+
+export async function adminMarkContactRead(id: string, isRead: boolean) {
+  const { error } = await rpc("admin_mark_contact_read", {
+    _id: id,
+    _is_read: isRead,
+  });
+
+  if (error) throw error;
+}
+
+export async function adminDeleteContactMessage(id: string) {
+  const { error } = await rpc("admin_delete_contact_message", {
+    _id: id,
+  });
+
+  if (error) throw error;
+}
+
 /** Trigger a CSV download using the current session's bearer token. */
 export async function downloadCsv(path: string, filename: string) {
   const { data: sess } = await supabase.auth.getSession();
@@ -185,7 +234,10 @@ export async function downloadCsv(path: string, filename: string) {
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 5_000);
 }

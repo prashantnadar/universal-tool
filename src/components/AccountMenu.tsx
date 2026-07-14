@@ -69,7 +69,11 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
   const initial = (name[0] || "?").toUpperCase();
 
   return (
-    <div ref={ref} className={`relative ${compact ? "" : "hidden sm:block"}`}>
+    // <div ref={ref} className={`relative ${compact ? "" : "hidden sm:block"}`}>
+    <div
+      ref={ref}
+      className={`relative ${compact ? "" : ""}`}
+    >
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}

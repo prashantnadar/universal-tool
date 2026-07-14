@@ -44,11 +44,10 @@ export function Header() {
             <Link
               key={l.to}
               to={l.to}
-              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition ${
-                isActive(l.to)
+              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition ${isActive(l.to)
                   ? "text-blue-700 dark:text-blue-300"
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-              }`}
+                }`}
             >
               {l.label}
               {isActive(l.to) && (
@@ -63,7 +62,8 @@ export function Header() {
         <div className="ml-auto hidden md:block lg:ml-6 lg:w-80">
           <GlobalSearch />
         </div>
-        <div className="ml-auto flex items-center gap-2 lg:ml-2">
+        {/* <div className="ml-auto flex items-center gap-2 lg:ml-2"> */}
+        <div className="ml-auto flex items-center gap-1 lg:gap-2 lg:ml-2">
           <button
             type="button"
             onClick={toggle}
@@ -71,12 +71,12 @@ export function Header() {
             className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-blue-500 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
           >
             {theme === "dark" ? (
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
             ) : (
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" /></svg>
             )}
           </button>
-          <AccountMenu />
+          <AccountMenu compact />
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
@@ -85,7 +85,7 @@ export function Header() {
             className="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 lg:hidden dark:border-slate-700"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              {mobileOpen ? <path d="M18 6 6 18M6 6l12 12"/> : <path d="M3 6h18M3 12h18M3 18h18"/>}
+              {mobileOpen ? <path d="M18 6 6 18M6 6l12 12" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
             </svg>
           </button>
         </div>
@@ -103,11 +103,10 @@ export function Header() {
                   <Link
                     key={p.to}
                     to={p.to}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-                      isActive(p.to)
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${isActive(p.to)
                         ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
                         : "text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-blue-300"
-                    }`}
+                      }`}
                   >
                     {p.label}
                   </Link>
@@ -123,14 +122,13 @@ export function Header() {
                     to={p.to}
                     aria-haspopup="true"
                     aria-expanded={open}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-                      isActive(p.to) || open
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${isActive(p.to) || open
                         ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
                         : "text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-blue-300"
-                    }`}
+                      }`}
                   >
                     {p.label}
-                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                   </Link>
                   <AnimatePresence>
                     {open && (
@@ -202,11 +200,10 @@ export function Header() {
                     key={l.to}
                     to={l.to}
                     onClick={() => setMobileOpen(false)}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                      isActive(l.to)
+                    className={`rounded-lg px-3 py-2 text-sm font-medium ${isActive(l.to)
                         ? "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
                         : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
-                    }`}
+                      }`}
                   >
                     {l.label}
                   </Link>
