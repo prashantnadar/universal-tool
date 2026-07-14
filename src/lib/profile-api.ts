@@ -52,34 +52,43 @@ export async function updateProfile(displayName: string) {
 }
 
 export async function uploadAvatar(file: File) {
+  console.log("1");
+
   const { data: userData } = await supabase.auth.getUser();
+
+  console.log("2");
 
   if (!userData.user) {
     throw new Error("Not authenticated");
   }
 
-  // Validate file type
   if (!file.type.startsWith("image/")) {
     throw new Error("Please select a valid image.");
   }
 
-  // Max 5 MB
   const MAX_SIZE = 5 * 1024 * 1024;
 
   if (file.size > MAX_SIZE) {
     throw new Error("Avatar must be smaller than 5 MB.");
   }
 
+  console.log("3");
+
   const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
 
-  const fileName = `${userData.user.id}.${extension}`;
+  const fileName = `${userData.user.id}/${Date.now()}.${extension}`;
+
+  console.log("4");
 
   const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file, {
     upsert: true,
     cacheControl: "3600",
   });
 
+  console.log("5");
+
   if (uploadError) {
+    console.error(uploadError);
     throw uploadError;
   }
 
@@ -87,29 +96,34 @@ export async function uploadAvatar(file: File) {
     data: { publicUrl },
   } = supabase.storage.from("avatars").getPublicUrl(fileName);
 
+  const avatarUrl = publicUrl;
+  console.log("6");
+
   const { error: profileError } = await supabase
     .from("profiles")
     .update({
-      avatar_url: publicUrl,
+      avatar_url: avatarUrl,
       updated_at: new Date().toISOString(),
     })
     .eq("id", userData.user.id);
 
-  if (profileError) {
-    throw profileError;
-  }
+  console.log("7");
+
+  if (profileError) throw profileError;
 
   const { error: authError } = await supabase.auth.updateUser({
     data: {
-      avatar_url: publicUrl,
+      avatar_url: avatarUrl,
     },
   });
 
-  if (authError) {
-    throw authError;
-  }
+  console.log("8");
 
-  return publicUrl;
+  if (authError) throw authError;
+
+  console.log("9");
+
+  return avatarUrl;
 }
 
 export async function changePassword(password: string) {
@@ -118,6 +132,14 @@ export async function changePassword(password: string) {
   });
 
   if (error) throw error;
+}
+
+export async function deleteAccount() {
+  const { error } = await supabase.functions.invoke("delete-account");
+
+  if (error) {
+    throw error;
+  }
 }
 
 export interface UsageStats {

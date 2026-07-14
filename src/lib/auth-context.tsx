@@ -103,13 +103,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = async () => {
     const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error) {
+      throw error;
+    }
+
+    const {
       data: { session },
     } = await supabase.auth.getSession();
 
     setSession(session);
 
-    await applyUser(session?.user ?? null);
+    await applyUser(user ?? null);
   };
+
   const value = useMemo<AuthState>(
     () => ({
       loading,

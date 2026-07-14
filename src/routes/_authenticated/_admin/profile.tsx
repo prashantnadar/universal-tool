@@ -10,6 +10,7 @@ import {
     updateProfile,
     uploadAvatar,
     changePassword,
+    deleteAccount,
     getUsageStats,
     type UsageStats,
 } from "@/lib/profile-api";
@@ -152,11 +153,13 @@ function ProfilePage() {
         const file = e.target.files?.[0];
 
         if (!file) return;
-
         try {
             setUploading(true);
+            console.log("1");
 
             const avatarUrl = await uploadAvatar(file);
+            window.dispatchEvent(new Event("avatar-updated"));
+            console.log("2");
 
             setProfile((prev) =>
                 prev
@@ -167,8 +170,12 @@ function ProfilePage() {
                     : prev,
             );
 
+            console.log("3");
+
             await refresh();
-            await loadProfile();
+            window.dispatchEvent(new Event("avatar-updated"));
+
+            console.log("4");
 
             Swal.fire({
                 icon: "success",
@@ -176,52 +183,209 @@ function ProfilePage() {
                 timer: 1500,
                 showConfirmButton: false,
             });
-        } catch (err: any) {
+        } catch (err) {
+            console.error(err);
+
             Swal.fire({
                 icon: "error",
                 title: "Upload Failed",
-                text: err.message,
+                text: String(err),
             });
         } finally {
+            console.log("5");
             setUploading(false);
         }
     }
 
+    // async function handlePassword() {
+    //     const { value: password } =
+    //         await Swal.fire({
+    //             title: "Change Password",
+    //             input: "password",
+    //             inputLabel: "New Password",
+    //             inputPlaceholder: "Minimum 8 characters",
+    //             showCancelButton: true,
+    //         });
+
+    //     if (!password) return;
+
+    //     const passwordRegex =
+    //         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    //     if (!passwordRegex.test(password)) {
+    //         await Swal.fire({
+    //             icon: "warning",
+    //             title: "Weak Password",
+    //             text:
+    //                 "Password must contain at least 8 characters, one uppercase letter, one lowercase letter and one number.",
+    //         });
+
+    //         return;
+    //     }
+
+    //     try {
+    //         await changePassword(password);
+
+    //         Swal.fire({
+    //             icon: "success",
+    //             title: "Password Changed",
+    //         });
+    //     } catch (err: any) {
+    //         Swal.fire({
+    //             icon: "error",
+    //             title: "Unable to change password",
+    //             text: err.message,
+    //         });
+    //     }
+    // }
     async function handlePassword() {
-        const { value: password } =
-            await Swal.fire({
-                title: "Change Password",
-                input: "password",
-                inputLabel: "New Password",
-                inputPlaceholder: "Minimum 8 characters",
-                showCancelButton: true,
-            });
+        const { value: password } = await Swal.fire({
+            title: "Change Password",
+            html: `
+      <div style="text-align:left">
+
+        <div style="position:relative;margin-bottom:12px;">
+          <input
+            id="new-password"
+            type="password"
+            class="swal2-input"
+            placeholder="New Password"
+            style="width:100%;margin:0;padding-right:45px;"
+          />
+       <button
+  id="toggle-new-password"
+  type="button"
+  style="
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    border:none;
+    background:none;
+    cursor:pointer;
+    color:#64748b;
+  "
+  aria-label="Show password"
+>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+</button>
+        </div>
+
+        <div style="position:relative;">
+          <input
+            id="confirm-password"
+            type="password"
+            class="swal2-input"
+            placeholder="Confirm Password"
+            style="width:100%;margin:0;padding-right:45px;"
+          />
+          <button
+  id="toggle-confirm-password"
+  type="button"
+  style="
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    border:none;
+    background:none;
+    cursor:pointer;
+    color:#64748b;
+  "
+  aria-label="Show password"
+>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+</button>
+        </div>
+
+        <p style="margin-top:12px;font-size:12px;color:#64748b;">
+          8–20 characters with uppercase, lowercase, number & special character.
+        </p>
+
+      </div>
+    `,
+            showCancelButton: true,
+            confirmButtonText: "Update Password",
+            focusConfirm: false,
+
+            didOpen: () => {
+                const newPassword =
+                    document.getElementById("new-password") as HTMLInputElement;
+
+                const confirmPassword =
+                    document.getElementById("confirm-password") as HTMLInputElement;
+
+                document
+                    .getElementById("toggle-new-password")
+                    ?.addEventListener("click", () => {
+                        newPassword.type =
+                            newPassword.type === "password"
+                                ? "text"
+                                : "password";
+                    });
+
+                document
+                    .getElementById("toggle-confirm-password")
+                    ?.addEventListener("click", () => {
+                        confirmPassword.type =
+                            confirmPassword.type === "password"
+                                ? "text"
+                                : "password";
+                    });
+            },
+
+            preConfirm: () => {
+                const password = (
+                    document.getElementById(
+                        "new-password"
+                    ) as HTMLInputElement
+                ).value.trim();
+
+                const confirmPassword = (
+                    document.getElementById(
+                        "confirm-password"
+                    ) as HTMLInputElement
+                ).value.trim();
+
+                const passwordRegex =
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>_\-+=/\\[\]]).{8,20}$/;
+
+                if (!passwordRegex.test(password)) {
+                    Swal.showValidationMessage(
+                        "Password must be 8–20 characters and include uppercase, lowercase, number and special character."
+                    );
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    Swal.showValidationMessage(
+                        "Passwords do not match."
+                    );
+                    return;
+                }
+
+                return password;
+            },
+        });
 
         if (!password) return;
-
-        const passwordRegex =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
-        if (!passwordRegex.test(password)) {
-            await Swal.fire({
-                icon: "warning",
-                title: "Weak Password",
-                text:
-                    "Password must contain at least 8 characters, one uppercase letter, one lowercase letter and one number.",
-            });
-
-            return;
-        }
 
         try {
             await changePassword(password);
 
-            Swal.fire({
+            await Swal.fire({
                 icon: "success",
                 title: "Password Changed",
+                text: "Your password has been updated successfully.",
             });
         } catch (err: any) {
-            Swal.fire({
+            await Swal.fire({
                 icon: "error",
                 title: "Unable to change password",
                 text: err.message,
@@ -243,6 +407,53 @@ function ProfilePage() {
             return;
 
         await signOut();
+    }
+
+
+    async function handleDeleteAccount() {
+        const { value } = await Swal.fire({
+            icon: "warning",
+            title: "Delete Account",
+            html: `
+            <p style="margin-bottom:12px">
+                This action is permanent and cannot be undone.
+            </p>
+
+            <p style="margin-bottom:12px">
+                Type <b>DELETE</b> below to continue.
+            </p>
+        `,
+            input: "text",
+            inputPlaceholder: "Type DELETE",
+            confirmButtonText: "Delete Account",
+            confirmButtonColor: "#dc2626",
+            showCancelButton: true,
+        });
+
+        if (value !== "DELETE") {
+            return;
+        }
+
+        try {
+            await deleteAccount();
+
+            await Swal.fire({
+                icon: "success",
+                title: "Account Deleted",
+                text: "Your account has been deleted successfully.",
+            });
+
+            await signOut();
+
+        } catch (err: any) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Delete Failed",
+                text: err.message,
+            });
+
+        }
     }
 
     if (loading) {
@@ -399,16 +610,14 @@ function ProfilePage() {
                                 <div>
 
                                     <label className="text-xs font-semibold uppercase text-slate-500">
-                                        Display Name
+                                        Name&nbsp;<span>{`(${displayName.length} / 20)`}</span>
                                     </label>
 
                                     <input
                                         value={displayName}
-                                        onChange={(e) =>
-                                            setDisplayName(
-                                                e.target.value
-                                            )
-                                        }
+                                        placeholder="Enter your name"
+                                        maxLength={20}
+                                        onChange={(e) => setDisplayName(e.target.value)}
                                         className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800"
                                     />
 
@@ -455,7 +664,7 @@ function ProfilePage() {
 
                                 </div>
 
-                                <div>
+                                {/* <div>
 
                                     <label className="text-xs font-semibold uppercase text-slate-500">
                                         User ID
@@ -465,7 +674,7 @@ function ProfilePage() {
                                         {user?.id}
                                     </div>
 
-                                </div>
+                                </div> */}
 
                                 <button
                                     onClick={handleSaveProfile}
@@ -623,6 +832,28 @@ function ProfilePage() {
                                 </div>
 
                             </div>
+
+                        </div>
+                        {/* Danger Zone */}
+
+                        <div className="rounded-2xl border border-red-300 bg-red-50 p-6 shadow-sm dark:border-red-900 dark:bg-red-950/20">
+
+                            <h2 className="text-lg font-bold text-red-600">
+                                ⚠ Danger Zone
+                            </h2>
+
+                            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                                Permanently delete your account, avatar, profile,
+                                subscriptions, usage history and all associated data.
+                                This action cannot be undone.
+                            </p>
+
+                            <button
+                                onClick={handleDeleteAccount}
+                                className="mt-6 rounded-lg bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700"
+                            >
+                                Delete Account
+                            </button>
 
                         </div>
                     </div>
