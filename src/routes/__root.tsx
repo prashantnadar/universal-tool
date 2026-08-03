@@ -116,6 +116,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               target: "https://universaltools.in/search?q={search_term_string}",
               "query-input": "required name=search_term_string"
             }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "UniversalTools",
+            "url": "https://universaltools.in",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires JavaScript",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "description": "UniversalTools provides free online PDF, image, text, password, code and productivity tools that work directly in your browser."
           }
         ]),
       }
