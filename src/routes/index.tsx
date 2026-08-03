@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "UniversalTools — Free Text, PDF, Image, Code & Password Tools" },
-      { name: "description", content: "50+ free online tools: word counter, PDF merger, image resizer, JSON formatter, password generator and more. Runs in your browser." },
+      { name: "description", content: "110+ free online tools: word counter, PDF merger, image resizer, JSON formatter, password generator and more. Runs in your browser." },
       { property: "og:title", content: "UniversalTools — Free Online Tools" },
       { property: "og:description", content: "50+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
       { property: "og:type", content: "website" },
