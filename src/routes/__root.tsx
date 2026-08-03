@@ -77,15 +77,48 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         `,
       },
       // 3. Existing Schema JSON-LD script
+      // {
+      //   type: "application/ld+json",
+      //   children: JSON.stringify({
+      //     "@context": "https://schema.org",
+      //     "@type": "WebSite",
+      //     name: "UniversalTools",
+      //     description: "30+ free online tools for text, PDF and image.",
+      //   }),
+      // },
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "UniversalTools",
-          description: "30+ free online tools for text, PDF and image.",
-        }),
-      },
+        children: JSON.stringify([
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": "https://universaltools.in/#organization",
+            name: "UniversalTools",
+            url: "https://universaltools.in",
+            logo: "https://universaltools.in/favicon.png",
+            description:
+              "UniversalTools provides free online tools for PDF, images, text, code, passwords and productivity.",
+            sameAs: [
+              "https://github.com/prashantnadar/universal-tool"
+            ]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": "https://universaltools.in/#website",
+            url: "https://universaltools.in",
+            name: "UniversalTools",
+            publisher: {
+              "@id": "https://universaltools.in/#organization"
+            },
+            potentialAction: {
+              "@type": "SearchAction",
+              target: "https://universaltools.in/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]),
+      }
     ],
   }),
   shellComponent: RootShell,
