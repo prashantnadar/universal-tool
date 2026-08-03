@@ -6,7 +6,7 @@ SHOTS = Path(__file__).parent / "shots"
 SHOTS.mkdir(exist_ok=True)
 BASE = "http://localhost:8080"
 
-EMAIL = "prashantnadar2223@gmail.com"
+EMAIL = "hello.pncreation@gmail.com"
 PHONE = "+91 96533 86506"
 
 

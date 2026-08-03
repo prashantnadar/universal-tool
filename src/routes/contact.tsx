@@ -12,7 +12,7 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact — UniversalTools" },
-      { name: "description", content: "Reach the UniversalTools team for support, partnerships or feedback. Email prashantnadar2223@gmail.com or call +91 96533 86506." },
+      { name: "description", content: "Reach the UniversalTools team for support, partnerships or feedback. Email hello.pncreation@gmail.com or call +91 96533 86506." },
       { property: "og:title", content: "Contact UniversalTools" },
       { property: "og:description", content: "Get in touch with the UniversalTools team — email, phone, and contact form." },
       { property: "og:type", content: "website" },
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/contact")({
             url: SITE_URL,
             contactPoint: [{
               "@type": "ContactPoint",
-              email: "prashantnadar2223@gmail.com",
+              email: "hello.pncreation@gmail.com",
               telephone: "+91-96533-86506",
               contactType: "customer support",
               availableLanguage: ["English", "Hindi"],
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/contact")({
 
 
 
-const EMAIL = "prashantnadar2223@gmail.com";
+const EMAIL = "hello.pncreation@gmail.com";
 const PHONE_DISPLAY = "+91 96533 86506";
 const PHONE_TEL = "+919653386506";
 

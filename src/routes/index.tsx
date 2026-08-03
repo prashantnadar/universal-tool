@@ -13,15 +13,15 @@ import { SITE_URL, imageMeta } from "@/lib/seo";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "UniversalTools — Free Text, PDF, Image, Code & Password Tools" },
+      { title: "UniversalTools – Free Online PDF, Image, Text, Code & Password Tools" },
       { name: "description", content: "110+ free online tools: word counter, PDF merger, image resizer, JSON formatter, password generator and more. Runs in your browser." },
       { property: "og:title", content: "UniversalTools — Free Online Tools" },
-      { property: "og:description", content: "50+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
+      { property: "og:description", content: "110+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_URL}/` },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "UniversalTools — Free Online Tools" },
-      { name: "twitter:description", content: "50+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
+      { name: "twitter:description", content: "110+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
       ...imageMeta(),
     ],
     links: [{ rel: "canonical", href: `${SITE_URL}/` }],
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
           "@type": "WebSite",
           name: "UniversalTools",
           url: `${SITE_URL}/`,
-          description: "50+ free online tools for text, PDF, image, code and password work.",
+          description: "110+ free online tools for text, PDF, image, code and password work.",
           potentialAction: {
             "@type": "SearchAction",
             target: `${SITE_URL}/?q={search_term_string}`,
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/")({
           logo: `${SITE_URL}/favicon.png`,
           contactPoint: {
             "@type": "ContactPoint",
-            email: "prashantnadar2223@gmail.com",
+            email: "hello.pncreation@gmail.com",
             telephone: "+91-96533-86506",
             contactType: "customer support",
           },

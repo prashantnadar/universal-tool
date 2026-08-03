@@ -15,8 +15,8 @@ export function Footer() {
           <div className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
             <p className="flex flex-wrap items-center gap-2">
               <span className="font-medium">Email:</span>
-              <a href="mailto:prashantnadar2223@gmail.com" className="hover:text-blue-600">prashantnadar2223@gmail.com</a>
-              <CopyInline value="prashantnadar2223@gmail.com" label="email" />
+              <a href="mailto:hello.pncreation@gmail.com" className="hover:text-blue-600">hello.pncreation@gmail.com</a>
+              <CopyInline value="hello.pncreation@gmail.com" label="email" />
             </p>
             <p className="flex flex-wrap items-center gap-2">
               <span className="font-medium">Phone:</span>
