@@ -4,11 +4,13 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 
+
 import {
   adminActiveUsers,
   adminAuditSearch,
   adminDailyTotals,
-  adminDeleteContactMessage,
+  adminArchiveContactMessage,
+  adminListArchivedContactMessages,
   adminListContactMessages,
   adminMarkContactRead,
   adminListUsers,
@@ -19,6 +21,7 @@ import {
   adminUsageSearch,
   adminUserHistory,
   downloadCsv,
+  adminRestoreContactMessage,
   type ActiveUser,
   type AdminStats,
   type AdminUser,
@@ -303,8 +306,9 @@ function UsersTab({ onErr, currentUserId }: { onErr: (m: string | null) => void;
     catch (e) { onErr((e as Error).message); }
     finally { setLoading(false); }
   }
-  useEffect(() => { load(); }, []);
-
+  useEffect(() => {
+    load();
+  }, []);
   const filtered = users.filter((u) => {
     if (filter === "all") return true;
     if (filter === "admin") return u.is_admin;
@@ -611,12 +615,20 @@ function ContactMessagesTab({
   const [messages, setMessages] = useState<ContactMessageRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [view, setView] = useState<"inbox" | "archived">("inbox");
 
   async function load() {
+    console.log("Current view:", view);
     setLoading(true);
 
     try {
-      const rows = await adminListContactMessages();
+      let rows: ContactMessageRow[];
+
+      if (view === "inbox") {
+        rows = await adminListContactMessages();
+      } else {
+        rows = await adminListArchivedContactMessages();
+      }
 
       setMessages(rows);
 
@@ -630,7 +642,7 @@ function ContactMessagesTab({
 
   useEffect(() => {
     load();
-  }, []);
+  }, [view]);
 
   async function toggleRead(row: ContactMessageRow) {
     setBusyId(row.id);
@@ -647,31 +659,75 @@ function ContactMessagesTab({
   }
 
   async function remove(row: ContactMessageRow) {
-    if (!confirm("Archive this message?")) return;
-
     setBusyId(row.id);
 
     try {
-      await adminDeleteContactMessage(row.id);
+
+      if (view === "inbox") {
+
+        if (!confirm("Archive this message?")) return;
+
+        await adminArchiveContactMessage(row.id);
+
+      } else {
+
+        if (!confirm("Restore this message?")) return;
+
+        await adminRestoreContactMessage(row.id);
+
+      }
 
       await load();
+
     } catch (e) {
+
       onErr((e as Error).message);
+
     } finally {
+
       setBusyId(null);
+
     }
   }
+
   const [selected, setSelected] = useState<ContactMessageRow | null>(null);
   return (
     <Card
-      title={`Contact Messages (${messages.length})`}
+      title={`${view === "inbox"
+        ? "Contact Messages"
+        : "Archived Messages"
+        } (${messages.length})`}
       right={
-        <button
-          onClick={load}
-          className="rounded-md border border-slate-200 px-3 py-1 text-xs font-medium dark:border-slate-700 dark:text-white"
-        >
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+
+          <button
+            onClick={() => setView("inbox")}
+            className={`rounded-md px-3 py-1 text-xs font-medium ${view === "inbox"
+              ? "bg-blue-600 text-white"
+              : "border border-slate-300"
+              }`}
+          >
+            Inbox
+          </button>
+
+          <button
+            onClick={() => setView("archived")}
+            className={`rounded-md px-3 py-1 text-xs font-medium ${view === "archived"
+              ? "bg-blue-600 text-white"
+              : "border border-slate-300"
+              }`}
+          >
+            Archived
+          </button>
+
+          <button
+            onClick={load}
+            className="rounded-md border border-slate-300 px-3 py-1 text-xs"
+          >
+            Refresh
+          </button>
+
+        </ div>
       }
     >
       {loading ? (

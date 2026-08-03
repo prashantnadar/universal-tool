@@ -80,6 +80,8 @@ export type ContactMessageRow = {
   subject: string;
   message: string;
   is_read: boolean;
+  is_deleted: boolean;
+  deleted_at: string | null;
   created_at: string;
 };
 
@@ -207,6 +209,20 @@ export async function adminListContactMessages(
   return (data ?? []) as ContactMessageRow[];
 }
 
+export async function adminListArchivedContactMessages(
+  limit = 100,
+  offset = 0,
+): Promise<ContactMessageRow[]> {
+  const { data, error } = await rpc("admin_list_archived_contact_messages", {
+    _limit: limit,
+    _offset: offset,
+  });
+
+  if (error) throw error;
+
+  return (data ?? []) as ContactMessageRow[];
+}
+
 export async function adminMarkContactRead(id: string, isRead: boolean) {
   const { error } = await rpc("admin_mark_contact_read", {
     _id: id,
@@ -216,8 +232,24 @@ export async function adminMarkContactRead(id: string, isRead: boolean) {
   if (error) throw error;
 }
 
-export async function adminDeleteContactMessage(id: string) {
+export async function adminArchiveContactMessage(id: string) {
   const { error } = await rpc("admin_delete_contact_message", {
+    _id: id,
+  });
+
+  if (error) throw error;
+}
+
+export async function adminRestoreContactMessage(id: string) {
+  const { error } = await rpc("admin_restore_contact_message", {
+    _id: id,
+  });
+
+  if (error) throw error;
+}
+
+export async function adminPermanentDeleteContactMessage(id: string) {
+  const { error } = await rpc("admin_permanent_delete_contact_message", {
     _id: id,
   });
 
