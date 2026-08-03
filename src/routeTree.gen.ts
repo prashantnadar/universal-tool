@@ -9,87 +9,41 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WhyChooseUsRouteImport } from './routes/why-choose-us'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as FavoritesRouteImport } from './routes/favorites'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ToolsTextRouteImport } from './routes/tools.text'
-import { Route as ToolsProductivityRouteImport } from './routes/tools.productivity'
-import { Route as ToolsPdfRouteImport } from './routes/tools.pdf'
-import { Route as ToolsPasswordRouteImport } from './routes/tools.password'
-import { Route as ToolsImageRouteImport } from './routes/tools.image'
-import { Route as ToolsColorRouteImport } from './routes/tools.color'
-import { Route as ToolsCodeRouteImport } from './routes/tools.code'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WhyChooseUsRouteImport } from './routes/why-choose-us'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
-import { Route as AuthenticatedAdminProfileRouteImport } from './routes/_authenticated/_admin/profile'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ToolsCodeRouteImport } from './routes/tools.code'
+import { Route as ToolsColorRouteImport } from './routes/tools.color'
+import { Route as ToolsImageRouteImport } from './routes/tools.image'
+import { Route as ToolsPasswordRouteImport } from './routes/tools.password'
+import { Route as ToolsPdfRouteImport } from './routes/tools.pdf'
+import { Route as ToolsProductivityRouteImport } from './routes/tools.productivity'
+import { Route as ToolsTextRouteImport } from './routes/tools.text'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
-import { Route as ApiAdminExportToolUsageRouteImport } from './routes/api/admin/export.tool-usage'
+import { Route as AuthenticatedAdminProfileRouteImport } from './routes/_authenticated/_admin/profile'
 import { Route as ApiAdminExportAuditLogsRouteImport } from './routes/api/admin/export.audit-logs'
+import { Route as ApiAdminExportToolUsageRouteImport } from './routes/api/admin/export.tool-usage'
 
-const WhyChooseUsRoute = WhyChooseUsRouteImport.update({
-  id: '/why-choose-us',
-  path: '/why-choose-us',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FavoritesRoute = FavoritesRouteImport.update({
-  id: '/favorites',
-  path: '/favorites',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -97,38 +51,73 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsTextRoute = ToolsTextRouteImport.update({
-  id: '/tools/text',
-  path: '/tools/text',
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsProductivityRoute = ToolsProductivityRouteImport.update({
-  id: '/tools/productivity',
-  path: '/tools/productivity',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsPdfRoute = ToolsPdfRouteImport.update({
-  id: '/tools/pdf',
-  path: '/tools/pdf',
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsPasswordRoute = ToolsPasswordRouteImport.update({
-  id: '/tools/password',
-  path: '/tools/password',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsImageRoute = ToolsImageRouteImport.update({
-  id: '/tools/image',
-  path: '/tools/image',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WhyChooseUsRoute = WhyChooseUsRouteImport.update({
+  id: '/why-choose-us',
+  path: '/why-choose-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ToolsCodeRoute = ToolsCodeRouteImport.update({
+  id: '/tools/code',
+  path: '/tools/code',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsColorRoute = ToolsColorRouteImport.update({
@@ -136,19 +125,35 @@ const ToolsColorRoute = ToolsColorRouteImport.update({
   path: '/tools/color',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ToolsCodeRoute = ToolsCodeRouteImport.update({
-  id: '/tools/code',
-  path: '/tools/code',
+const ToolsImageRoute = ToolsImageRouteImport.update({
+  id: '/tools/image',
+  path: '/tools/image',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const ToolsPasswordRoute = ToolsPasswordRouteImport.update({
+  id: '/tools/password',
+  path: '/tools/password',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/_admin',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const ToolsPdfRoute = ToolsPdfRouteImport.update({
+  id: '/tools/pdf',
+  path: '/tools/pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsProductivityRoute = ToolsProductivityRouteImport.update({
+  id: '/tools/productivity',
+  path: '/tools/productivity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsTextRoute = ToolsTextRouteImport.update({
+  id: '/tools/text',
+  path: '/tools/text',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedAdminProfileRoute =
   AuthenticatedAdminProfileRouteImport.update({
@@ -156,19 +161,14 @@ const AuthenticatedAdminProfileRoute =
     path: '/profile',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedAdminRoute,
+const ApiAdminExportAuditLogsRoute = ApiAdminExportAuditLogsRouteImport.update({
+  id: '/api/admin/export/audit-logs',
+  path: '/api/admin/export/audit-logs',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminExportToolUsageRoute = ApiAdminExportToolUsageRouteImport.update({
   id: '/api/admin/export/tool-usage',
   path: '/api/admin/export/tool-usage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminExportAuditLogsRoute = ApiAdminExportAuditLogsRouteImport.update({
-  id: '/api/admin/export/audit-logs',
-  path: '/api/admin/export/audit-logs',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -370,88 +370,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/why-choose-us': {
-      id: '/why-choose-us'
-      path: '/why-choose-us'
-      fullPath: '/why-choose-us'
-      preLoaderRoute: typeof WhyChooseUsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/favorites': {
-      id: '/favorites'
-      path: '/favorites'
-      fullPath: '/favorites'
-      preLoaderRoute: typeof FavoritesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -461,46 +384,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/why-choose-us': {
+      id: '/why-choose-us'
+      path: '/why-choose-us'
+      fullPath: '/why-choose-us'
+      preLoaderRoute: typeof WhyChooseUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_admin': {
+      id: '/_authenticated/_admin'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/text': {
-      id: '/tools/text'
-      path: '/tools/text'
-      fullPath: '/tools/text'
-      preLoaderRoute: typeof ToolsTextRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/productivity': {
-      id: '/tools/productivity'
-      path: '/tools/productivity'
-      fullPath: '/tools/productivity'
-      preLoaderRoute: typeof ToolsProductivityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tools/pdf': {
-      id: '/tools/pdf'
-      path: '/tools/pdf'
-      fullPath: '/tools/pdf'
-      preLoaderRoute: typeof ToolsPdfRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tools/password': {
-      id: '/tools/password'
-      path: '/tools/password'
-      fullPath: '/tools/password'
-      preLoaderRoute: typeof ToolsPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tools/image': {
-      id: '/tools/image'
-      path: '/tools/image'
-      fullPath: '/tools/image'
-      preLoaderRoute: typeof ToolsImageRouteImport
+    '/tools/code': {
+      id: '/tools/code'
+      path: '/tools/code'
+      fullPath: '/tools/code'
+      preLoaderRoute: typeof ToolsCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tools/color': {
@@ -510,33 +496,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsColorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tools/code': {
-      id: '/tools/code'
-      path: '/tools/code'
-      fullPath: '/tools/code'
-      preLoaderRoute: typeof ToolsCodeRouteImport
+    '/tools/image': {
+      id: '/tools/image'
+      path: '/tools/image'
+      fullPath: '/tools/image'
+      preLoaderRoute: typeof ToolsImageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/tools/password': {
+      id: '/tools/password'
+      path: '/tools/password'
+      fullPath: '/tools/password'
+      preLoaderRoute: typeof ToolsPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/_admin': {
-      id: '/_authenticated/_admin'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/tools/pdf': {
+      id: '/tools/pdf'
+      path: '/tools/pdf'
+      fullPath: '/tools/pdf'
+      preLoaderRoute: typeof ToolsPdfRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/_admin/profile': {
-      id: '/_authenticated/_admin/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedAdminProfileRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+    '/tools/productivity': {
+      id: '/tools/productivity'
+      path: '/tools/productivity'
+      fullPath: '/tools/productivity'
+      preLoaderRoute: typeof ToolsProductivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/text': {
+      id: '/tools/text'
+      path: '/tools/text'
+      fullPath: '/tools/text'
+      preLoaderRoute: typeof ToolsTextRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_admin/admin': {
       id: '/_authenticated/_admin/admin'
@@ -545,18 +538,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/api/admin/export/tool-usage': {
-      id: '/api/admin/export/tool-usage'
-      path: '/api/admin/export/tool-usage'
-      fullPath: '/api/admin/export/tool-usage'
-      preLoaderRoute: typeof ApiAdminExportToolUsageRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/_admin/profile': {
+      id: '/_authenticated/_admin/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedAdminProfileRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/api/admin/export/audit-logs': {
       id: '/api/admin/export/audit-logs'
       path: '/api/admin/export/audit-logs'
       fullPath: '/api/admin/export/audit-logs'
       preLoaderRoute: typeof ApiAdminExportAuditLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/export/tool-usage': {
+      id: '/api/admin/export/tool-usage'
+      path: '/api/admin/export/tool-usage'
+      fullPath: '/api/admin/export/tool-usage'
+      preLoaderRoute: typeof ApiAdminExportToolUsageRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
