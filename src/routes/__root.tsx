@@ -64,7 +64,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       // 1. Load Google Analytics library asynchronously
       {
-        src: "https://googletagmanager.com",
+        src: "https://www.googletagmanager.com/gtag/js?id=G-9FXMNKTXKF",
         async: true,
       },
       // 2. Initialize tracking tags
