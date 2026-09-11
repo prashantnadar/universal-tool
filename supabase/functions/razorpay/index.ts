@@ -9,7 +9,7 @@ const corsHeaders = {
 
 const RAZORPAY_KEY_ID = Deno.env.get("RAZORPAY_KEY_ID");
 const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET");
-
+const RAZORPAY_WEBHOOK_SECRET = Deno.env.get("RAZORPAY_WEBHOOK_SECRET");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -98,6 +98,33 @@ async function verifySignature(orderId: string, paymentId: string, signature: st
   return generatedSignature === signature;
 }
 
+async function verifyWebhookSignature(rawBody: string, signature: string) {
+  if (!RAZORPAY_WEBHOOK_SECRET) {
+    throw new Error("Razorpay webhook secret is not configured");
+  }
+
+  const encoder = new TextEncoder();
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(RAZORPAY_WEBHOOK_SECRET),
+    {
+      name: "HMAC",
+      hash: "SHA-256",
+    },
+    false,
+    ["sign"],
+  );
+
+  const signatureBuffer = await crypto.subtle.sign("HMAC", key, encoder.encode(rawBody));
+
+  const generatedSignature = Array.from(new Uint8Array(signatureBuffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+
+  return generatedSignature === signature;
+}
+
 async function getRazorpayOrder(orderId: string) {
   if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
     throw new Error("Razorpay credentials are not configured");
@@ -125,6 +152,42 @@ async function getRazorpayOrder(orderId: string) {
   return data;
 }
 
+async function activateProForUser(
+  userId: string,
+  orderId: string,
+  paymentId: string | null = null,
+) {
+  const supabaseAdmin = getAdminClient();
+
+  const { data: subscription, error: subscriptionError } = await supabaseAdmin
+    .from("subscriptions")
+    .update({
+      plan: "pro",
+      status: "active",
+      current_period_end: null,
+      provider: "razorpay",
+      provider_customer_id: null,
+      provider_subscription_id: orderId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+    .select()
+    .single();
+
+  if (subscriptionError) {
+    console.error("Failed to activate Pro subscription:", {
+      userId,
+      orderId,
+      paymentId,
+      error: subscriptionError,
+    });
+
+    throw new Error("Failed to activate Pro subscription");
+  }
+
+  return subscription;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", {
@@ -150,7 +213,111 @@ Deno.serve(async (req) => {
     );
   }
 
-  const user = await getAuthenticatedUser(req);
+  const rawBody = await req.text();
+
+  const webhookSignature = req.headers.get("X-Razorpay-Signature");
+
+  if (webhookSignature) {
+    try {
+      const isValidWebhook = await verifyWebhookSignature(rawBody, webhookSignature);
+
+      if (!isValidWebhook) {
+        return jsonResponse(
+          {
+            error: "Invalid Razorpay webhook signature",
+          },
+          401,
+        );
+      }
+
+      const webhookBody = JSON.parse(rawBody);
+
+      console.log("Razorpay webhook received:", {
+        event: webhookBody?.event,
+        eventId: req.headers.get("x-razorpay-event-id"),
+      });
+
+      if (webhookBody?.event === "order.paid") {
+        const order = webhookBody?.payload?.order?.entity;
+
+        const payment = webhookBody?.payload?.payment?.entity;
+
+        const orderId = order?.id;
+        const paymentId = payment?.id ?? null;
+
+        if (!orderId) {
+          return jsonResponse(
+            {
+              error: "Webhook order ID is missing",
+            },
+            400,
+          );
+        }
+
+        // Fetch the order directly from Razorpay.
+        // This gives us an additional server-side verification.
+        const verifiedOrder = await getRazorpayOrder(orderId);
+
+        if (
+          verifiedOrder.status !== "paid" ||
+          verifiedOrder.amount !== 200 ||
+          verifiedOrder.currency !== "INR"
+        ) {
+          return jsonResponse(
+            {
+              error: "Webhook order details do not match the Pro plan",
+            },
+            400,
+          );
+        }
+
+        const supabaseUserId = verifiedOrder.notes?.supabase_user_id;
+
+        if (!supabaseUserId) {
+          return jsonResponse(
+            {
+              error: "Supabase user ID is missing from Razorpay order",
+            },
+            400,
+          );
+        }
+
+        const subscription = await activateProForUser(supabaseUserId, orderId, paymentId);
+
+        return jsonResponse({
+          success: true,
+          event: "order.paid",
+          plan: "pro_lifetime",
+          orderId,
+          paymentId,
+          subscription,
+        });
+      }
+
+      // Acknowledge other configured webhook events.
+      return jsonResponse({
+        success: true,
+        received: true,
+      });
+    } catch (error) {
+      console.error("Razorpay webhook error:", error);
+
+      return jsonResponse(
+        {
+          error: "Webhook processing failed",
+        },
+        500,
+      );
+    }
+  }
+
+  const user = await getAuthenticatedUser(
+    new Request(req.url, {
+      method: req.method,
+      headers: req.headers,
+      body: rawBody,
+    }),
+  );
 
   if (!user) {
     return jsonResponse(
@@ -162,7 +329,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = await req.json();
+    const body = JSON.parse(rawBody);
 
     const action = body?.action;
 
@@ -403,25 +570,12 @@ Deno.serve(async (req) => {
       }
 
       // 6. Update the authenticated user's subscription.
-      const supabaseAdmin = getAdminClient();
+      let subscription;
 
-      const { data: subscription, error: subscriptionError } = await supabaseAdmin
-        .from("subscriptions")
-        .update({
-          plan: "pro",
-          status: "active",
-          current_period_end: null,
-          provider: "razorpay",
-          provider_customer_id: null,
-          provider_subscription_id: razorpay_order_id,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (subscriptionError) {
-        console.error("Failed to update Pro subscription:", subscriptionError);
+      try {
+        subscription = await activateProForUser(user.id, razorpay_order_id, razorpay_payment_id);
+      } catch (error) {
+        console.error("Failed to update Pro subscription:", error);
 
         return jsonResponse(
           {
