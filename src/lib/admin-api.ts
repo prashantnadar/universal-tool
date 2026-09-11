@@ -4,7 +4,7 @@ export type AdminUser = {
   user_id: string;
   email: string | null;
   display_name: string | null;
-  plan: "free" | "premium";
+  plan: "free" | "premium" | "pro";
   is_admin: boolean;
   created_at: string;
   usage_24h: number;
@@ -101,7 +101,7 @@ export async function adminListUsers(limit = 100, offset = 0): Promise<AdminUser
   return (data ?? []) as AdminUser[];
 }
 
-export async function adminSetPlan(userId: string, plan: "free" | "premium") {
+export async function adminSetPlan(userId: string,  plan: "free" | "premium" | "pro",) {
   const { error } = await rpc("admin_set_plan", { _target: userId, _plan: plan });
   if (error) throw error;
 }

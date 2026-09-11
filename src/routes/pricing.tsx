@@ -1,8 +1,45 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Layout } from "@/components/Layout";
 import { Reveal } from "@/components/Reveal";
 import { SITE_URL } from "@/lib/seo";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayCheckoutOptions) => RazorpayInstance;
+  }
+}
+
+type RazorpayCheckoutOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill?: {
+    name?: string;
+    email?: string;
+  };
+  theme?: {
+    color?: string;
+  };
+  handler: (response: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }) => void;
+  modal?: {
+    ondismiss?: () => void;
+  };
+};
+
+type RazorpayInstance = {
+  open: () => void;
+};
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -178,6 +215,25 @@ const FAQS: { q: string; a: string }[] = [
 
 
 function Pricing() {
+  useEffect(() => {
+    if (document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+
+    document.body.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, []);
+
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+
   return (
     <Layout>
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
@@ -204,16 +260,16 @@ function Pricing() {
             const cardBg = p.featured
               ? "border-blue-500 bg-gradient-to-b from-blue-600 to-blue-700 text-white shadow-2xl shadow-blue-600/30"
               : p.highlight
-              ? "border-amber-400 bg-gradient-to-b from-amber-50 to-white shadow-2xl shadow-amber-500/20 dark:from-amber-950/40 dark:to-slate-900"
-              : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900";
+                ? "border-amber-400 bg-gradient-to-b from-amber-50 to-white shadow-2xl shadow-amber-500/20 dark:from-amber-950/40 dark:to-slate-900"
+                : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900";
             const titleColor = p.featured ? "text-white" : "text-slate-900 dark:text-white";
             const taglineColor = p.featured ? "text-blue-100" : "text-slate-500 dark:text-slate-400";
             const featureColor = p.featured ? "text-blue-50" : "text-slate-600 dark:text-slate-300";
             const btnClass = p.featured
               ? "bg-white text-blue-700 hover:bg-blue-50"
               : p.highlight
-              ? "bg-amber-500 text-white hover:bg-amber-600"
-              : "bg-blue-600 text-white hover:bg-blue-700";
+                ? "bg-amber-500 text-white hover:bg-amber-600"
+                : "bg-blue-600 text-white hover:bg-blue-700";
             return (
               <Reveal key={p.name} delay={i * 0.08}>
                 <div className={`relative flex h-full flex-col rounded-2xl border p-6 ${cardBg}`}>

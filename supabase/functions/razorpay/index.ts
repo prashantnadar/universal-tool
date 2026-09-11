@@ -1,4 +1,5 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,12 +10,60 @@ const corsHeaders = {
 const RAZORPAY_KEY_ID = Deno.env.get("RAZORPAY_KEY_ID");
 const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET");
 
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       ...corsHeaders,
       "Content-Type": "application/json",
+    },
+  });
+}
+
+async function getAuthenticatedUser(req: Request) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error("Supabase server configuration is missing");
+  }
+
+  const authHeader = req.headers.get("Authorization");
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: {
+      headers: {
+        Authorization: authHeader,
+      },
+    },
+  });
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return null;
+  }
+
+  return user;
+}
+
+function getAdminClient() {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("Supabase admin configuration is missing");
+  }
+
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
     },
   });
 }
@@ -49,6 +98,33 @@ async function verifySignature(orderId: string, paymentId: string, signature: st
   return generatedSignature === signature;
 }
 
+async function getRazorpayOrder(orderId: string) {
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+    throw new Error("Razorpay credentials are not configured");
+  }
+
+  const auth = btoa(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`);
+
+  const response = await fetch(
+    `https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Basic ${auth}`,
+      },
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Razorpay order lookup failed:", data);
+    throw new Error(data?.error?.description || "Unable to verify Razorpay order");
+  }
+
+  return data;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", {
@@ -71,6 +147,17 @@ Deno.serve(async (req) => {
         error: "Razorpay server configuration is missing",
       },
       500,
+    );
+  }
+
+  const user = await getAuthenticatedUser(req);
+
+  if (!user) {
+    return jsonResponse(
+      {
+        error: "Authentication required",
+      },
+      401,
     );
   }
 
@@ -118,6 +205,7 @@ Deno.serve(async (req) => {
             product: "UniversalTools",
             plan: "Pro Lifetime",
             environment: "test",
+            supabase_user_id: user.id,
           },
         }),
       });
@@ -201,6 +289,7 @@ Deno.serve(async (req) => {
             product: "UniversalTools",
             plan: "Premium Monthly",
             environment: "test",
+            supabase_user_id: user.id,
           },
         }),
       });
@@ -256,6 +345,7 @@ Deno.serve(async (req) => {
         );
       }
 
+      // 1. Verify Razorpay's payment signature.
       const isValid = await verifySignature(
         razorpay_order_id,
         razorpay_payment_id,
@@ -273,13 +363,75 @@ Deno.serve(async (req) => {
         );
       }
 
-      /*
-       * IMPORTANT:
-       * At this point the payment signature is valid.
-       *
-       * We will connect this to the user's Supabase profile/
-       * subscription record after the Checkout flow is working.
-       */
+      // 2. Fetch the order directly from Razorpay.
+      const order = await getRazorpayOrder(razorpay_order_id);
+
+      // 3. Confirm this order belongs to the authenticated user.
+      if (order.notes?.supabase_user_id !== user.id) {
+        return jsonResponse(
+          {
+            success: false,
+            verified: false,
+            error: "This Razorpay order does not belong to the authenticated user",
+          },
+          403,
+        );
+      }
+
+      // 4. Confirm this is the exact Pro Lifetime test order.
+      if (order.id !== razorpay_order_id || order.amount !== 200 || order.currency !== "INR") {
+        return jsonResponse(
+          {
+            success: false,
+            verified: false,
+            error: "Razorpay order details do not match the Pro plan",
+          },
+          400,
+        );
+      }
+
+      // 4. // 5. Confirm Razorpay considers the order paid.
+      if (order.status !== "paid") {
+        return jsonResponse(
+          {
+            success: false,
+            verified: false,
+            error: "Razorpay order has not been paid",
+          },
+          400,
+        );
+      }
+
+      // 6. Update the authenticated user's subscription.
+      const supabaseAdmin = getAdminClient();
+
+      const { data: subscription, error: subscriptionError } = await supabaseAdmin
+        .from("subscriptions")
+        .update({
+          plan: "pro",
+          status: "active",
+          current_period_end: null,
+          provider: "razorpay",
+          provider_customer_id: null,
+          provider_subscription_id: razorpay_order_id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (subscriptionError) {
+        console.error("Failed to update Pro subscription:", subscriptionError);
+
+        return jsonResponse(
+          {
+            success: false,
+            verified: true,
+            error: "Payment verified, but account upgrade failed",
+          },
+          500,
+        );
+      }
 
       return jsonResponse({
         success: true,
@@ -287,6 +439,7 @@ Deno.serve(async (req) => {
         plan: "pro_lifetime",
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
+        subscription,
       });
     }
 
