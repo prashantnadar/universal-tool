@@ -9,3 +9,4 @@ entrypoint = "./functions/google-analytics/index.ts"
 [functions.razorpay]
 enabled = true
 verify_jwt = false
+supabase functions deploy razorpay
