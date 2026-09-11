@@ -36,7 +36,6 @@ async function verifySignature(orderId: string, paymentId: string, signature: st
     false,
     ["sign"],
   );
-
   const signatureBuffer = await crypto.subtle.sign(
     "HMAC",
     key,
