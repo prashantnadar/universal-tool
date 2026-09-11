@@ -234,6 +234,123 @@ function Pricing() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
 
+  const [proBusy, setProBusy] = useState(false);
+
+  const handleProPurchase = async () => {
+    if (proBusy) return;
+
+    if (!isAuthenticated || !user) {
+      navigate({
+        to: "/auth",
+        search: {
+          mode: "signin",
+          redirect: "/pricing",
+        },
+      });
+      return;
+    }
+
+    setProBusy(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("razorpay", {
+        body: {
+          action: "create_order",
+          plan: "pro_lifetime",
+        },
+      });
+
+      if (error) {
+        console.error("Razorpay order creation error:", error);
+        toast.error("Unable to start Pro checkout");
+        return;
+      }
+
+      if (!data?.success || !data?.order?.id || !data?.keyId) {
+        toast.error(data?.error || "Unable to start Pro checkout");
+        return;
+      }
+
+      if (!window.Razorpay) {
+        toast.error("Razorpay Checkout failed to load. Please refresh and try again.");
+        return;
+      }
+
+      const razorpay = new window.Razorpay({
+        key: data.keyId,
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: "UniversalTools",
+        description: "Pro Lifetime — Test Payment ₹2",
+        order_id: data.order.id,
+        prefill: {
+          email: user.email ?? "",
+          name:
+            typeof user.user_metadata?.display_name === "string"
+              ? user.user_metadata.display_name
+              : "",
+        },
+        theme: {
+          color: "#2563eb",
+        },
+        handler: async (response) => {
+          try {
+            const { data: verificationData, error: verificationError } =
+              await supabase.functions.invoke("razorpay", {
+                body: {
+                  action: "verify_payment",
+                  plan: "pro_lifetime",
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                },
+              });
+
+            if (verificationError) {
+              console.error(
+                "Razorpay payment verification error:",
+                verificationError,
+              );
+              toast.error("Payment verification failed");
+              return;
+            }
+
+            if (!verificationData?.verified) {
+              toast.error(
+                verificationData?.error ||
+                "Payment could not be verified",
+              );
+              return;
+            }
+
+            toast.success("Pro Lifetime activated successfully");
+
+            navigate({
+              to: "/dashboard",
+              replace: true,
+            });
+          } catch (error) {
+            console.error("Payment verification error:", error);
+            toast.error("Payment verification failed");
+          } finally {
+            setProBusy(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setProBusy(false);
+          },
+        },
+      });
+
+      razorpay.open();
+    } catch (error) {
+      console.error("Pro checkout error:", error);
+      toast.error("Unable to start Pro checkout");
+      setProBusy(false);
+    }
+  };
+
   return (
     <Layout>
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
@@ -288,7 +405,23 @@ function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <Link to={p.to} className={`mt-8 block rounded-lg px-4 py-2.5 text-center font-semibold transition ${btnClass}`}>{p.cta}</Link>
+                  {p.name === "Pro" ? (
+                    <button
+                      type="button"
+                      onClick={handleProPurchase}
+                      disabled={proBusy}
+                      className={`mt-8 block w-full rounded-lg px-4 py-2.5 text-center font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${btnClass}`}
+                    >
+                      {proBusy ? "Opening checkout…" : p.cta}
+                    </button>
+                  ) : (
+                    <Link
+                      to={p.to}
+                      className={`mt-8 block rounded-lg px-4 py-2.5 text-center font-semibold transition ${btnClass}`}
+                    >
+                      {p.cta}
+                    </Link>
+                  )}
                 </div>
               </Reveal>
             );
