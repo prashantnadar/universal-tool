@@ -51,7 +51,7 @@ export function Footer() {
       </div>
       <div className="border-t border-slate-200 px-4 py-4 text-center text-xs text-slate-500 dark:border-slate-800">
         <p>© {new Date().getFullYear()} UniversalTools. All rights reserved. · <Link to="/privacy" className="hover:text-blue-600">Privacy</Link> · <Link to="/terms" className="hover:text-blue-600">Terms</Link></p>
-        <p className="mt-1">Made with ❤️ by <a href="https://www.instagram.com/prashant_Dev_22/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">Prashant Nadar</a></p>
+        <p className="mt-1">Made with ❤️ by <a href="https://prashant-nadar.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">Prashant Nadar | PN Creation</a></p>
       </div>
     </footer>
   );

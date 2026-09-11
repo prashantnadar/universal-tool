@@ -122,7 +122,7 @@ export function GlobalSearch() {
           aria-controls="global-search-listbox"
           aria-activedescendant={open && results[active] ? `gs-opt-${results[active].id}` : undefined}
           aria-autocomplete="list"
-          placeholder="Search 50+ tools… (Ctrl/⌘K)"
+          placeholder={`Search ${TOOLS.length}+ tools... (Ctrl/⌘K)`}
           aria-label="Search all tools. Press Control or Command K to focus."
           aria-keyshortcuts="Control+K Meta+K"
           className="w-full rounded-full border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder-slate-500"

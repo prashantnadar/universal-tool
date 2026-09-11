@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as IndexOldRouteImport } from './routes/index-old'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -64,6 +65,11 @@ const ContactRoute = ContactRouteImport.update({
 const FavoritesRoute = FavoritesRouteImport.update({
   id: '/favorites',
   path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexOldRoute = IndexOldRouteImport.update({
+  id: '/index-old',
+  path: '/index-old',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
+  '/index-old': typeof IndexOldRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
+  '/index-old': typeof IndexOldRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
+  '/index-old': typeof IndexOldRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/favorites'
+    | '/index-old'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/favorites'
+    | '/index-old'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/favorites'
+    | '/index-old'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -349,6 +361,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   FavoritesRoute: typeof FavoritesRoute
+  IndexOldRoute: typeof IndexOldRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       path: '/favorites'
       fullPath: '/favorites'
       preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/index-old': {
+      id: '/index-old'
+      path: '/index-old'
+      fullPath: '/index-old'
+      preLoaderRoute: typeof IndexOldRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -595,6 +615,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   FavoritesRoute: FavoritesRoute,
+  IndexOldRoute: IndexOldRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

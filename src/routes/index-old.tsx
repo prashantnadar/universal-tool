@@ -10,18 +10,18 @@ import { getRecent } from "@/lib/recently-used";
 import { getTopUsed, subscribeUsage } from "@/lib/usage-tracking";
 import { SITE_URL, imageMeta } from "@/lib/seo";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/index-old")({
   head: () => ({
     meta: [
-      { title: "UniversalTools — Free Text, PDF, Image, Code & Password Tools" },
-      { name: "description", content: `${TOOLS.length}+ free online tools: word counter, PDF merger, image resizer, JSON formatter, password generator and more. Runs in your browser.` },
+      { title: "UniversalTools – Free Online PDF, Image, Text, Code & Password Tools" },
+      { name: "description", content: "110+ free online tools: word counter, PDF merger, image resizer, JSON formatter, password generator and more. Runs in your browser." },
       { property: "og:title", content: "UniversalTools — Free Online Tools" },
-      { property: "og:description", content: `${TOOLS.length}+ free tools for text, PDF, image, code and password work. No uploads, no sign-up.` },
+      { property: "og:description", content: "110+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_URL}/` },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "UniversalTools — Free Online Tools" },
-      { name: "twitter:description", content: `${TOOLS.length}+ free tools for text, PDF, image, code and password work. No uploads, no sign-up.` },
+      { name: "twitter:description", content: "110+ free tools for text, PDF, image, code and password work. No uploads, no sign-up." },
       ...imageMeta(),
     ],
     links: [{ rel: "canonical", href: `${SITE_URL}/` }],
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
           "@type": "WebSite",
           name: "UniversalTools",
           url: `${SITE_URL}/`,
-          description: `${TOOLS.length}+ free online tools for text, PDF, image, code and password work.`,
+          description: "110+ free online tools for text, PDF, image, code and password work.",
           potentialAction: {
             "@type": "SearchAction",
             target: `${SITE_URL}/?q={search_term_string}`,
@@ -57,33 +57,12 @@ export const Route = createFileRoute("/")({
           },
         }),
       },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQS.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }),
-      },
     ],
   }),
   component: Home,
 });
 
-const FAQS = [
-  { q: "Are the tools on UniversalTools free?", a: "Yes. Every tool is free to use. A few advanced PDF features unlock with a Pro plan, but the core toolkit stays free." },
-  { q: "Do I need an account to use the tools?", a: "No. You can use tools as a guest. Signing in gives you a higher daily limit plus favorites and history across devices." },
-  { q: "Are my files uploaded to a server?", a: "No. Text, image, code and password tools run entirely in your browser, so your files never leave your device." },
-  { q: "Which file formats are supported?", a: "PDF, PNG, JPG, WEBP, DOCX, XLSX, JSON, XML, CSV, HTML and plain text are supported across the different tool categories." },
-  { q: "Is there a daily usage limit?", a: "Guests get 3 runs per day on metered PDF and image tools, free accounts get 10, and Premium or Pro plans are unlimited." },
-  { q: "Does UniversalTools work on mobile?", a: "Yes. The site is fully responsive and works on phones, tablets, laptops and desktops." },
-  { q: "Can I use the tools offline?", a: "Most text, code and password tools keep working after the page loads because all processing happens locally in your browser." },
-  { q: "How do I report a bug or request a tool?", a: "Use the contact page to send a message; feature requests and bug reports are reviewed regularly." },
-] as const;
+
 
 const CATS = [
   { to: "/tools/text", title: "Text Tools", desc: "Counters, case converters, cleaners, encoders", count: TOOLS.filter(t => t.category === "text").length, accent: "from-blue-500 to-cyan-400", Icon: Type },
@@ -93,20 +72,6 @@ const CATS = [
   { to: "/tools/password", title: "Password Tools", desc: "Generator, strength meter, passphrases, PINs", count: TOOLS.filter(t => t.category === "password").length, accent: "from-emerald-500 to-teal-500", Icon: KeyRound },
   { to: "/tools/productivity", title: "Productivity Tools", desc: "Timer, to-do, calculators, unit converters", count: 20, accent: "from-amber-500 to-orange-500", Icon: Timer },
 ] as const;
-
-const POPULAR_MIX: { category: ToolMeta["category"]; take: number }[] = [
-  { category: "text", take: 4 },
-  { category: "pdf", take: 4 },
-  { category: "image", take: 4 },
-  { category: "code", take: 4 },
-  { category: "password", take: 3 },
-  { category: "color", take: 2 },
-  { category: "productivity", take: 3 },
-];
-
-const POPULAR_TOOLS: ToolMeta[] = POPULAR_MIX.flatMap(({ category, take }) =>
-  TOOLS.filter((t) => t.category === category).slice(0, take)
-);
 
 const FALLBACK_TRENDING: ToolMeta[] = [
   TOOLS.find((t) => t.id === "pdf-merge")!,
@@ -138,7 +103,7 @@ function Home() {
   return (
     <Layout>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-slate-200 bg-gradient-to-b from-blue-50/60 via-white to-white dark:border-slate-800 dark:from-blue-950/40 dark:via-slate-950 dark:to-slate-950">
+      <section className="relative overflow-hidden border-b border-slate-200 bg-linear-to-b from-blue-50/60 via-white to-white dark:border-slate-800 dark:from-blue-950/40 dark:via-slate-950 dark:to-slate-950">
         <div className="absolute inset-x-0 top-0 -z-10 h-[480px] bg-[radial-gradient(closest-side,rgba(37,99,235,0.18),transparent)]" aria-hidden />
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:py-28">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mx-auto max-w-3xl text-center">
@@ -146,7 +111,7 @@ function Home() {
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" /> {TOOLS.length}+ tools · runs in your browser · no uploads
             </span>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl dark:text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              One toolkit for <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">everything you write,</span> <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">code and share.</span>
+              One toolkit for <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">everything you write,</span> <span className="bg-linear-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">code and share.</span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600 dark:text-slate-300">
               Text, PDF, image, code and password utilities — all in your browser. Nothing leaves your device.
@@ -259,77 +224,6 @@ function Home() {
               </div>
             </Reveal>
           ))}
-        </div>
-      </section>
-
-      {/* POPULAR TOOLS */}
-      <section className="border-y border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-          <Reveal>
-            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Popular tools</h2>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">A quick look at some of the most-used utilities on UniversalTools.</p>
-          </Reveal>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {POPULAR_TOOLS.map((t, i) => (
-              <Reveal key={t.id} delay={Math.min(i, 8) * 0.04}>
-                <Link to={t.route} title={t.name} className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 dark:border-slate-800 dark:bg-slate-950">
-                  <span className="inline-flex w-fit rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700 dark:bg-blue-950 dark:text-blue-300">{t.category}</span>
-                  <h3 className="mt-3 font-bold text-slate-900 dark:text-white">{t.name}</h3>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t.description}</p>
-                  <span className="mt-4 text-sm font-semibold text-blue-600 dark:text-blue-400">Open tool <span aria-hidden className="inline-block transition group-hover:translate-x-1">→</span></span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* BROWSE CATEGORIES */}
-      {/* <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <Reveal>
-          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Browse categories</h2>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">Jump straight into the category you need.</p>
-        </Reveal>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { to: "/tools/text", label: "Text Tools" },
-            { to: "/tools/pdf", label: "PDF Tools" },
-            { to: "/tools/image", label: "Image Tools" },
-            { to: "/tools/code", label: "Code Tools" },
-            { to: "/tools/password", label: "Password Tools" },
-            { to: "/tools/color", label: "Color Tools" },
-            { to: "/tools/productivity", label: "Productivity Tools" },
-          ].map((c, i) => (
-            <Reveal key={c.to} delay={i * 0.05}>
-              <Link to={c.to} className="group flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 font-semibold text-slate-900 shadow-sm transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-white">
-                <span>{c.label}</span>
-                <span aria-hidden className="text-blue-600 transition group-hover:translate-x-1 dark:text-blue-400">→</span>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </section> */}
-
-      {/* FAQ */}
-      <section className="border-t border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40">
-        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
-          <Reveal>
-            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Frequently asked questions</h2>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">Everything you might want to know before using UniversalTools.</p>
-          </Reveal>
-          <div className="mt-8 space-y-3">
-            {FAQS.map((f, i) => (
-              <Reveal key={f.q} delay={Math.min(i, 6) * 0.05}>
-                <details className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 dark:border-slate-800 dark:bg-slate-950">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-slate-900 dark:text-white">
-                    <span>{f.q}</span>
-                    <span aria-hidden className="text-blue-600 transition group-open:rotate-45 dark:text-blue-400">+</span>
-                  </summary>
-                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">{f.a}</p>
-                </details>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
     </Layout>

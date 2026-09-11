@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export type AppRole = "admin" | "user";
-export type PlanType = "free" | "premium";
+export type PlanType = "free" | "premium" | "pro";
 
 interface AuthState {
   loading: boolean;
@@ -29,9 +29,17 @@ async function loadRoleAndPlan(userId: string): Promise<{ role: AppRole | null; 
   ]);
   const role = (roleRow?.role as AppRole | undefined) ?? "user";
   let plan: PlanType = "free";
-  if (subRow?.plan === "premium" && subRow?.status === "active") {
-    const notExpired = !subRow.current_period_end || new Date(subRow.current_period_end) > new Date();
-    if (notExpired) plan = "premium";
+  if (
+    (subRow?.plan === "premium" || subRow?.plan === "pro") &&
+    subRow?.status === "active"
+  ) {
+    const notExpired =
+      !subRow.current_period_end ||
+      new Date(subRow.current_period_end) > new Date();
+
+    if (notExpired) {
+      plan = subRow.plan as PlanType;
+    }
   }
   return { role, plan };
 }
@@ -129,7 +137,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       plan,
       isAuthenticated: !!user,
       isAdmin: role === "admin",
-      isPremium: plan === "premium" || role === "admin",
+      isPremium:
+        plan === "premium" ||
+        plan === "pro" ||
+        role === "admin",
       signOut,
       refresh,
     }),
